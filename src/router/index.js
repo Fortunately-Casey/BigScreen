@@ -18,6 +18,11 @@ const routes = [
     path: "/importStaff",
     name:"importStaff",
     component: resolve => require(["../views/importStaff/ImportStaff.vue"], resolve)
+  },
+  {
+    path: "/manage",
+    name:"manage",
+    component: resolve => require(["../views/manage/Manage.vue"], resolve)
   }
 ];
 const routerPush = VueRouter.prototype.push

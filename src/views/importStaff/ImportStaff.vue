@@ -50,11 +50,8 @@
           <FormItem prop="heat">
             <Select v-model="formInline.heat" size="large" placeholder="体温" style="width:150px;">
               <Option value>全部</Option>
-              <Option value="小于37"><37</Option>
-              <Option value="37-37.3">37-37.3</Option>
-              <Option value="37.3-38">37.3-38</Option>
-              <Option value="38-39">38-39</Option>
-              <Option value="大于39">>39</Option>
+              <Option value="小于等于37.3">37=<</Option>
+              <Option value="大于等于37.3">>=37.3</Option>
             </Select>
           </FormItem>
           <FormItem prop="date">
@@ -105,7 +102,7 @@
         </div>
       </div>
       <div class="list">
-        <Table :columns="columns" :data="list" @on-selection-change="selectChange"></Table>
+        <Table :columns="columns" :data="list" @on-selection-change="selectChange" :loading="loading"></Table>
         <div class="page">
           <Page :total="total" :page-size="pageSize" :current="pageIndex" @on-change="changePage" />
         </div>
@@ -212,6 +209,7 @@ export default {
       ruleInline: {},
       h_company: false,
       tab: "全部",
+      loading: false,
       columns: [
         {
           title: "序号",
@@ -332,6 +330,7 @@ export default {
           type = 2;
           break;
       }
+      vm.loading = true;
       axios
         .get(getURL("CommandHandler.ashx"), {
           params: {
@@ -350,6 +349,7 @@ export default {
           }
         })
         .then(function(res) {
+          vm.loading = false;
           vm.list = res.data.list || [];
           vm.total = res.data.recordCount;
         });

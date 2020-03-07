@@ -129,7 +129,7 @@
           </div>
           <div class="list-panel">
             <div class="loading" v-if="isLoading">
-              <Spin></Spin>
+              <Spin size="large"></Spin>
             </div>
             <div
               class="list-row"
@@ -197,6 +197,9 @@
           <ul class="sys-link" v-show="isOpenSys">
             <li>
               <a href="javascript:void(0);" class="backend" @click="navigate('index')">后台管理</a>
+            </li>
+            <li>
+              <a href="javascript:void(0);" class="backend" @click="navigate('manage')">企业管理</a>
             </li>
             <li>
               <a href="javascript:void(0);" class="logout" @click="logoutFunc">退出</a>
@@ -1146,10 +1149,10 @@ export default {
                   return (
                     params[0].name +
                     "<br/>" +
-                    params[1].marker +
-                    params[1].seriesName +
+                    params[0].marker +
+                    params[0].seriesName +
                     "：" +
-                    params[1].value
+                    params[0].value
                   );
                 } else {
                   return (

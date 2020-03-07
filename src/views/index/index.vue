@@ -55,11 +55,8 @@
           <FormItem prop="heat">
             <Select v-model="formInline.heat" size="large" placeholder="体温" style="width:150px;">
               <Option value>全部</Option>
-              <Option value="小于37"><37</Option>
-              <Option value="37-37.3">37-37.3</Option>
-              <Option value="37.3-38">37.3-38</Option>
-              <Option value="38-39">38-39</Option>
-              <Option value="大于39">>39</Option>
+              <Option value="小于等于37.3">37=<</Option>
+              <Option value="大于等于37.3">>=37.3</Option>
             </Select>
           </FormItem>
           <FormItem prop="date">
@@ -130,11 +127,11 @@
             :format="['xls','xlsx']"
           >
             <a href="javascript:void(0);" class="import">导入数据</a>
-          </Upload> -->
+          </Upload>-->
         </div>
       </div>
       <div class="list">
-        <Table :columns="columns" :data="list" @on-selection-change="selectChange"></Table>
+        <Table :columns="columns" :data="list" @on-selection-change="selectChange" :loading="loading"></Table>
         <div class="page">
           <Page :total="total" :page-size="pageSize" :current="pageIndex" @on-change="changePage" />
         </div>
@@ -239,6 +236,7 @@ export default {
         casenumber: "",
         contactnumber: ""
       },
+      loading:false,
       uploadUrl: getURL("UploadHandler.ashx"),
       uploadUrlMJ: getURL("ImportCloseContact.ashx"),
       ids: [],
@@ -360,6 +358,7 @@ export default {
           type = 2;
           break;
       }
+      this.loading = true;
       axios
         .get(getURL("CommandHandler.ashx"), {
           params: {
@@ -378,6 +377,7 @@ export default {
           }
         })
         .then(function(res) {
+          vm.loading = false;
           vm.list = res.data.list || [];
           vm.total = res.data.recordCount;
         });
@@ -407,9 +407,9 @@ export default {
     },
     importPerson() {
       let vm = this;
-      if( !vm.formImport.casenumber || !vm.formImport.contactnumber) {
-          this.$Message.warning('请输入导入人数！');
-          return;
+      if (!vm.formImport.casenumber || !vm.formImport.contactnumber) {
+        this.$Message.warning("请输入导入人数！");
+        return;
       }
       axios
         .get(getURL("CommandHandler.ashx"), {
@@ -439,10 +439,12 @@ export default {
       this.formInline.endDate = date[1];
     },
     exportData() {
-      // if(!this.ids.length){
-      //     this.$Message.error("请选择要导出的项！");
-      //     return false;
-      // }
+      if (this.total / this.pageSize > 1000) {
+        this.$Message.error({
+          content: "请进行条件筛选后，再进行导出！"
+        });
+        return;
+      }
       axios
         .get(getURL("CommandHandler.ashx"), {
           params: {
