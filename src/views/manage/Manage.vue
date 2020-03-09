@@ -15,6 +15,9 @@
             <Button type="warning" size="large" class="btn-reset" @click="resetFunc">重置</Button>
           </FormItem>
         </Form>
+        <div class="search-list" v-if="isShowNameList">
+          <div class="item" v-for="(v,i) in 10" :key="i">11111</div>
+        </div>
       </div>
       <div class="list">
         <Table
@@ -42,6 +45,14 @@
               <label>管理员手机：</label>
               <Input v-model="editValue.Mobile" style="width: 300px" />
             </div>
+            <div class="info-row">
+              <label>员工人数：</label>
+              <Input v-model="editValue.EmployeeCount" style="width: 300px" />
+            </div>
+            <div class="info-row">
+              <label>企业床位数：</label>
+              <Input v-model="editValue.IsolatedBedCount" style="width: 300px" />
+            </div>
           </div>
         </div>
         <div slot="footer">
@@ -54,12 +65,11 @@
     </div>
   </div>
 </template>
-
 <script>
 import Header from "../../components/Header.vue";
 import $ from "jquery";
 import axios from "axios";
-import { getURL } from "../../common/tool.js";
+import { getURL, debounce } from "../../common/tool.js";
 export default {
   name: "index",
   data() {
@@ -137,11 +147,26 @@ export default {
       pageIndex: 1,
       total: 0,
       modal: false,
-      editValue: {}
+      chosedValue:{},
+      editValue: {},
+      isShowNameList:false,
+      isWatchName:true
     };
   },
   components: {
     Header
+  },
+  created() {
+    let vm = this;
+    this.$watch(
+      "formInline.name",
+      debounce((newValue, oldValue) => {
+        if (!vm.isWatchName) {
+          return;
+        }
+        vm.searchName();
+      }, 500)
+    );
   },
   mounted() {
     this.getList();
@@ -170,6 +195,9 @@ export default {
       this.pageIndex = pageIndex;
       this.getList();
     },
+    searchName() {
+      console.log('111')
+    },
     searchFunc: function() {
       this.pageIndex = 1;
       this.getList();
@@ -194,23 +222,59 @@ export default {
     },
     showEdit(params) {
       var vm = this;
+      vm.chosedValue = params.row;
       vm.editValue = JSON.parse(JSON.stringify(params.row));
       // console.log(params.rows)
       this.modal = true;
     },
     edit() {
       var vm = this;
+      if (!vm.editValue.Mobile) {
+        this.$Message.error({
+          content: "手机号不能为空！",
+          duration: 2
+        });
+        return;
+      }
+      if (!vm.editValue.EnterpriseName) {
+        this.$Message.error({
+          content: "企业名称不能为空！",
+          duration: 2
+        });
+        return;
+      }
+      if (vm.editValue.EmployeeCount === "") {
+        this.$Message.error({
+          content: "员工人数不能为空！",
+          duration: 2
+        });
+        return;
+      }
+      if (vm.editValue.IsolatedBedCount === "") {
+        this.$Message.error({
+          content: "企业隔离床位数不能为空！",
+          duration: 2
+        });
+        return;
+      }
+      console.log(vm.chosedValue);
+      console.log(vm.editValue);
       axios
         .get(getURL("CommandHandler.ashx"), {
           params: {
             method: "ModifyEnterpriseInfo",
-            mobile: vm.editValue.Mobile,
             enterpriseid: vm.editValue.EnterpriseID,
-            enterprisename: vm.editValue.EnterpriseName
+            oldenterprisename: vm.chosedValue.EnterpriseName,
+            newenterprisename: vm.editValue.EnterpriseName,
+            oldmobile:vm.chosedValue.Mobile,
+            newmobile:vm.editValue.Mobile,
+            employeecount: vm.editValue.EmployeeCount,
+            isolatedbedcount: vm.editValue.IsolatedBedCount
           }
         })
         .then(function(res) {
-          if (res.data === 'success') {
+          console.log(res)
+          if (res.data.result === "success") {
             vm.$Message.success({
               content: "修改成功!"
             });
@@ -242,8 +306,26 @@ export default {
   .filter {
     padding: 10px 40px;
     border-bottom: 1px solid #e2e9f1;
+    position: relative;
     .ivu-form-item {
       margin-bottom: 0;
+    }
+    .search-list {
+      width: 300px;
+      height: 250px;
+      background-color: #fff;
+      border: 1px solid rgb(226, 223, 223);
+      position: absolute;
+      left: 40px;
+      top: 50px;
+      z-index: 999;
+      border-radius: 3px;
+      overflow-y: auto;
+      .item {
+        height: 30px;
+        line-height: 30px;
+        padding-left: 15px;
+      }
     }
   }
   .sp-company {

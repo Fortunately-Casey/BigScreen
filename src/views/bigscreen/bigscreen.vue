@@ -86,8 +86,8 @@
             </div>
             <div class="mid-data-item">
               <div class="mid-data-c1">较昨日 +{{stat.JZRYCZZRS || 0}}</div>
-              <div class="mid-data-c2">{{stat.YCZZRS || 0}}</div>
-              <div class="mid-data-c3">异常转诊</div>
+              <div class="mid-data-c2" @click="showWarning">{{stat.YCZZRS || 0}}</div>
+              <div class="mid-data-c3">异常预警</div>
             </div>
           </div>
         </div>
@@ -117,11 +117,11 @@
         </div>
         <div class="right-foot">
           <div class="sub-title list-bg mb15">
-            <p>异常预警</p>
+            <p>症状检测</p>
           </div>
           <div class="list-row list-row-head">
             <div class="list-item-one">序号</div>
-            <div class="list-item" >企业名称</div>
+            <div class="list-item">企业名称</div>
             <div class="list-item-three">发热</div>
             <div class="list-item-four">不适症状</div>
             <div class="list-item-three">留观</div>
@@ -134,14 +134,15 @@
             <div
               class="list-row"
               v-for="(item,index) in cwxx"
+              :key="index"
               @click="showDetail(item.EnterpriseID)"
             >
               <div class="list-item-one">{{index + 1}}</div>
-              <div class="list-item" :title="item.EnterpriseName"> {{item.EnterpriseName}}</div>
-              <div class="list-item-three"> {{item.TempCount}}</div>
-              <div class="list-item-four"> {{item.CoughCount}}</div>
-              <div class="list-item-three"> {{item.ObserveCount}}</div>
-              <div class="list-item-three"> {{item.SeekCount}}</div>
+              <div class="list-item" :title="item.EnterpriseName">{{item.EnterpriseName}}</div>
+              <div class="list-item-three">{{item.TempCount}}</div>
+              <div class="list-item-four">{{item.CoughCount}}</div>
+              <div class="list-item-three">{{item.ObserveCount}}</div>
+              <div class="list-item-three">{{item.SeekCount}}</div>
             </div>
           </div>
           <!-- <div class="list-row">
@@ -177,15 +178,15 @@
       </div>
       <div class="name-list">
         <Table :columns="columns" :data="list" :height="500"></Table>
-        <!-- <div class="name-item" v-for="(item,index) in nameList">
-                    {{item.Name}}
-        </div>-->
       </div>
-      <!--  <div slot="footer">
-                <div style="text-align:center;">
-                    <Button @click="modal=false">关闭</Button>
-                </div>
-      </div>-->
+    </Modal>
+    <Modal v-model="warning" width="1200" :footer-hide="true" class="dark-blue-modal">
+      <div slot="header">
+        <p class="m-title">异常预警</p>
+      </div>
+      <div class="name-list">
+        <Table :columns="columns" :data="warningList" :height="500"></Table>
+      </div>
     </Modal>
     <div class="login">
       <template v-if="!isLogin">
@@ -241,7 +242,7 @@ import { getURL } from "../../common/tool.js";
 import { setToken, getToken } from "../../libs/utils";
 import { loadModules, loadCss } from "esri-loader";
 
-import icon11 from "../../assets/images/bigscreen/icon11.gif"
+import icon11 from "../../assets/images/bigscreen/icon11.gif";
 import icon6 from "../../assets/images/bigscreen/icon6.png";
 import icon5 from "../../assets/images/bigscreen/icon5.png";
 import icon3 from "../../assets/images/bigscreen/icon3.png";
@@ -266,7 +267,7 @@ export default {
       ycqylyr: null,
       date: "",
       time: "",
-      isLoading:true,
+      isLoading: false,
       company: {
         number: 0,
         peopleNumber: 0
@@ -276,19 +277,19 @@ export default {
           title: "序号",
           type: "index",
           align: "center",
-          width: 80
+          width: 70
         },
         {
           title: "姓名",
           key: "Name",
           align: "center",
-          width: 70
+          width: 80
         },
         {
           title: "体温",
           key: "Temp",
           align: "center",
-          width: 100
+          width: 60
         },
         {
           title: "是否咳嗽",
@@ -324,7 +325,7 @@ export default {
           title: "是否复工",
           key: "RecoveryWork",
           align: "center",
-          width:70,
+          width: 70,
           render: (h, params) => {
             var s = "";
             if (!params.row.RecoveryWork) {
@@ -364,9 +365,10 @@ export default {
           title: "返通前地址",
           key: "BeforeReturnNtAddress",
           align: "center",
-          width:150
+          width: 150
         }
       ],
+      warning: false,
       list: [],
       stat: {},
       monitor: {
@@ -385,7 +387,8 @@ export default {
         userName: "",
         password: ""
       },
-      isOpenSys: false
+      isOpenSys: false,
+      warningList: []
     };
   },
   mounted: function() {
@@ -608,17 +611,20 @@ export default {
           //异常企业
           if (vm.ycqylyr == null) {
             var layerDefinition = {
-              "geometryType": "esriGeometryPoint",
-              "fields": [{
-                "name": "EnterpriseName",
-                "type": "esriFieldTypeString",
-                "alias": "名称"
-              }, {
-                "name": "Address",
-                "type": "esriFieldTypeString",
-                "alias": "地址"
-              }]
-            }
+              geometryType: "esriGeometryPoint",
+              fields: [
+                {
+                  name: "EnterpriseName",
+                  type: "esriFieldTypeString",
+                  alias: "名称"
+                },
+                {
+                  name: "Address",
+                  type: "esriFieldTypeString",
+                  alias: "地址"
+                }
+              ]
+            };
             var featureCollection = {
               layerDefinition: layerDefinition,
               featureSet: null
@@ -626,35 +632,41 @@ export default {
             var infoTemplate = new esri.InfoTemplate();
             infoTemplate.setTitle("${EnterpriseName}");
             infoTemplate.setContent("${Address}<br/>");
-                   //创建集中隔离点图层
-                   vm.ycqylyr = new FeatureLayer(featureCollection, {
-                    mode: FeatureLayer.MODE_SNAPSHOT,
-                    infoTemplate: infoTemplate,
-                    outFields: ["*"],
-                    opacity: 1
-                  });
-                   vm.map.addLayer(vm.ycqylyr);
+            //创建集中隔离点图层
+            vm.ycqylyr = new FeatureLayer(featureCollection, {
+              mode: FeatureLayer.MODE_SNAPSHOT,
+              infoTemplate: infoTemplate,
+              outFields: ["*"],
+              opacity: 1
+            });
+            vm.map.addLayer(vm.ycqylyr);
 
-                   axios.get(getURL('CommandHandler.ashx'),{
-                    params: {
-                      method: "GetUnusualEnterprise"
-                    }
-                  }).then(function (res) {
-
-                   for (var i = 0; i < res.data.length; i++) {
-                    var info = {};
-                    var x = Number(res.data[i].BDX);
-                    var y = Number(res.data[i].BDY);
-                          var point = new esri.geometry.Point(x, y, new esri.SpatialReference({ wkid: 4490 }));//初始化起点
-                          var graphic = new esri.Graphic(point);
-                          graphic.setAttributes({ "EnterpriseName": res.data[i].EnterpriseName, "Address": res.data[i].Address});
-                          graphic.setSymbol(ycqySymbol);
-                          vm.ycqylyr.add(graphic);
-                        }
-                      });
+            axios
+              .get(getURL("CommandHandler.ashx"), {
+                params: {
+                  method: "GetUnusualEnterprise"
                 }
-
- 
+              })
+              .then(function(res) {
+                for (var i = 0; i < res.data.length; i++) {
+                  var info = {};
+                  var x = Number(res.data[i].BDX);
+                  var y = Number(res.data[i].BDY);
+                  var point = new esri.geometry.Point(
+                    x,
+                    y,
+                    new esri.SpatialReference({ wkid: 4490 })
+                  ); //初始化起点
+                  var graphic = new esri.Graphic(point);
+                  graphic.setAttributes({
+                    EnterpriseName: res.data[i].EnterpriseName,
+                    Address: res.data[i].Address
+                  });
+                  graphic.setSymbol(ycqySymbol);
+                  vm.ycqylyr.add(graphic);
+                }
+              });
+          }
         }
       )
       .catch(err => {
@@ -669,9 +681,9 @@ export default {
       this.createPieChart();
       this.createColumnChart1();
       this.getStat();
-              this.createColumnChart3();
-            this.createColumnChart4();
-            this.createLineChart();
+      this.createColumnChart3();
+      this.createColumnChart4();
+      this.createLineChart();
       this.getCWInfo();
     },
     createPieChart: function() {
@@ -1043,7 +1055,7 @@ export default {
           data: ["申报人员", "异常人员"],
           axisLabel: {
             color: "#fff",
-            interval:0
+            interval: 0
           },
           axisLine: {
             show: false
@@ -1059,8 +1071,8 @@ export default {
             nameTextStyle: {
               color: "#fff"
             },
-            max:35000,      // 计算最大值
-            interval: Math.ceil(35000 / 5),
+            max: 40000, // 计算最大值
+            interval: Math.ceil(40000 / 5),
             axisLabel: {
               color: "#fff"
             },
@@ -1083,11 +1095,11 @@ export default {
             axisLine: {
               show: false
             },
-            max:500,      // 计算最大值
+            max: 500, // 计算最大值
             interval: Math.ceil(500 / 5),
             axisTick: {
               show: false
-            },
+            }
           }
         ],
         series: [
@@ -1128,7 +1140,7 @@ export default {
         })
         .then(function(res) {
           var myChart = echarts.init(document.getElementById("col-chart3"));
-          console.log(res)
+          console.log(res);
           var option = {
             legend: {
               data: ["剩余容量", "隔离人数"],
@@ -1332,6 +1344,23 @@ export default {
           myChart.setOption(option);
         });
     },
+    showWarning() {
+      let vm = this;
+      axios
+        .get(getURL("CommandHandler.ashx"), {
+          params: {
+            method: "GetYCYJ"
+          }
+        })
+        .then(function(res) {
+          if (res.data.length === 0) {
+            vm.$Message.error("今日无异常预警!");
+            return;
+          }
+          vm.warningList = res.data;
+          vm.warning = true;
+        });
+    },
     getLeftTopData1() {
       let vm = this;
       axios
@@ -1359,6 +1388,7 @@ export default {
     },
     getCWInfo() {
       let vm = this;
+      vm.isLoading = true;
       axios
         .get(getURL("CommandHandler.ashx"), {
           params: {

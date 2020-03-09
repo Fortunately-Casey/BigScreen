@@ -55,8 +55,8 @@
           <FormItem prop="heat">
             <Select v-model="formInline.heat" size="large" placeholder="体温" style="width:150px;">
               <Option value>全部</Option>
-              <Option value="小于等于37.3">37=<</Option>
-              <Option value="大于等于37.3">>=37.3</Option>
+              <Option value="小于等于37.3">小于等于37.3</Option>
+              <Option value="大于37.3">大于37.3</Option>
             </Select>
           </FormItem>
           <FormItem prop="date">
@@ -117,6 +117,8 @@
                         <a href="javascript:void(0);" class="export export-new">导入密接数据</a>
           </Upload>-->
           <a href="javascript:void(0);" class="export" @click="exportData">导出数据</a>
+          <a href="javascript:void(0);" class="export" @click="exportInformation">导出预警信息</a>
+          <a href="javascript:void(0);" class="export" @click="exportSymptom">导出症状检测详情列表</a>
           <!-- <Upload
             :action="uploadUrl"
             class="fl"
@@ -131,7 +133,12 @@
         </div>
       </div>
       <div class="list">
-        <Table :columns="columns" :data="list" @on-selection-change="selectChange" :loading="loading"></Table>
+        <Table
+          :columns="columns"
+          :data="list"
+          @on-selection-change="selectChange"
+          :loading="loading"
+        ></Table>
         <div class="page">
           <Page :total="total" :page-size="pageSize" :current="pageIndex" @on-change="changePage" />
         </div>
@@ -236,7 +243,7 @@ export default {
         casenumber: "",
         contactnumber: ""
       },
-      loading:false,
+      loading: false,
       uploadUrl: getURL("UploadHandler.ashx"),
       uploadUrlMJ: getURL("ImportCloseContact.ashx"),
       ids: [],
@@ -462,6 +469,30 @@ export default {
         .then(function(res) {
           window.location.href = getURL(res.data);
           console.log(res);
+        });
+    },
+    //导出预警信息
+    exportInformation() {
+      axios
+        .get(getURL("CommandHandler.ashx"), {
+          params: {
+            method: "ExportYCYJData"
+          }
+        })
+        .then(res => {
+          window.location.href = getURL(res.data);
+        });
+    },
+    //导出症状检查详细信息
+    exportSymptom() {
+      axios
+        .get(getURL("CommandHandler.ashx"), {
+          params: {
+            method: "ExportZZJCData"
+          }
+        })
+        .then(res => {
+          window.location.href = getURL(res.data);
         });
     },
     handleSuccess(res) {

@@ -7,3 +7,17 @@ export function getURL(url) {
     }
     return _result;
 }
+
+// 防抖
+export function debounce(fn, delay) {
+    let timer = null
+    return function () {
+        let arg = arguments
+
+        clearTimeout(timer)
+
+        timer = setTimeout(() => {
+            fn.apply(this, arg)
+        }, delay)
+    }
+}

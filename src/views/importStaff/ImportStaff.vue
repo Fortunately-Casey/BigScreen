@@ -50,8 +50,8 @@
           <FormItem prop="heat">
             <Select v-model="formInline.heat" size="large" placeholder="体温" style="width:150px;">
               <Option value>全部</Option>
-              <Option value="小于等于37.3">37=<</Option>
-              <Option value="大于等于37.3">>=37.3</Option>
+              <Option value="小于等于37.3">小于等于37.3</Option>
+              <Option value="大于37.3">大于37.3</Option>
             </Select>
           </FormItem>
           <FormItem prop="date">
