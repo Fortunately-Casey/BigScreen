@@ -101,19 +101,19 @@
           <div class="sub-title col-bg mb15">
             <p>企业人员动态</p>
           </div>
-          <div class="col-chart" id="line-chart" style="height:80%"></div>
+          <div class="col-chart" id="line-chart" ></div>
         </div>
         <div class="sub-mid">
           <div class="sub-title col-bg mb15">
             <p>隔离观察信息</p>
           </div>
-          <div class="col-chart" id="col-chart3" style="height:80%"></div>
+          <div class="col-chart" id="col-chart3" ></div>
         </div>
         <div class="sub-mid">
           <div class="sub-title col-bg mb15">
             <p>隔离期人员统计</p>
           </div>
-          <div class="col-chart" id="col-chart4" style="height:80%"></div>
+          <div class="col-chart" id="col-chart4" ></div>
         </div>
         <div class="right-foot">
           <div class="sub-title list-bg mb15">
@@ -681,9 +681,9 @@ export default {
       this.createPieChart();
       this.createColumnChart1();
       this.getStat();
-      this.createColumnChart3();
-      this.createColumnChart4();
-      this.createLineChart();
+      // this.createColumnChart3();
+      // this.createColumnChart4();
+      // this.createLineChart();
       this.getCWInfo();
     },
     createPieChart: function() {
@@ -876,7 +876,6 @@ export default {
         })
         .then(function(res) {
           var data = res.data[0];
-          console.log(data);
           var myChart = echarts.init(document.getElementById("col-chart1"));
           var option = {
             legend: {
@@ -1399,9 +1398,9 @@ export default {
           vm.cwxx = res.data;
           vm.isLoading = false;
           vm.$nextTick(function() {
-            // vm.createColumnChart3();
-            // vm.createColumnChart4();
-            // vm.createLineChart();
+            vm.createColumnChart3();
+            vm.createColumnChart4();
+            vm.createLineChart();
           });
         });
     },
@@ -1663,10 +1662,9 @@ export default {
       no-repeat;
   }
   .sub-mid {
-    // flex: 1;
-    // display: flex;
-    // flex-direction: column;
-    height: 23%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
   }
   .sub-title {
     height: 32px;
