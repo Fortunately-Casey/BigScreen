@@ -10,6 +10,7 @@
                 type="text"
                 v-model="formInline.company"
                 size="large"
+                @input="nameChange"
                 @on-focus="highlightText"
                 @on-blur="normalText"
                 id="company"
@@ -74,10 +75,17 @@
             <Button type="warning" size="large" class="btn-reset" @click="resetFunc">重置</Button>
           </FormItem>
         </Form>
+        <div class="search-list" v-if="isShowNameList">
+          <div
+            class="item"
+            v-for="(v,i) in searchList"
+            :key="i"
+            @click="choseItem(v)"
+          >{{v.EnterpriseName}}</div>
+        </div>
       </div>
       <div class="filter">
         <Form
-          ref="formInline"
           :model="formImport"
           :rules="ruleInline"
           inline
@@ -224,7 +232,7 @@
 import Header from "../../components/Header.vue";
 import $ from "jquery";
 import axios from "axios";
-import { getURL } from "../../common/tool.js";
+import { getURL, debounce } from "../../common/tool.js";
 export default {
   name: "index",
   data() {
@@ -322,11 +330,28 @@ export default {
       pageIndex: 1,
       total: 0,
       modal: false,
-      info: {}
+      info: {},
+      chosedValue: {},
+      editValue: {},
+      searchList: [],
+      isShowNameList: false,
+      isWatchName: true
     };
   },
   components: {
     Header
+  },
+  created() {
+    let vm = this;
+    this.$watch(
+      "formInline.company",
+      debounce((newValue, oldValue) => {
+        if (!vm.isWatchName) {
+          return;
+        }
+        vm.searchName();
+      }, 500)
+    );
   },
   mounted() {
     this.getList();
@@ -392,6 +417,31 @@ export default {
     changePage(pageIndex) {
       this.pageIndex = pageIndex;
       this.getList();
+    },
+    searchName() {
+      let vm = this;
+      axios
+        .get(getURL("CommandHandler.ashx"), {
+          params: {
+            method: "GetEnterpriseName",
+            enterprisename: vm.formInline.company
+          }
+        })
+        .then(function(res) {
+          if (res.data.length > 0) {
+            vm.searchList = res.data;
+            vm.isShowNameList = true;
+          }
+          console.log(res);
+        });
+    },
+    choseItem(v) {
+      this.isWatchName = false;
+      this.formInline.company = v.EnterpriseName;
+      this.isShowNameList = false;
+    },
+    nameChange() {
+      this.isWatchName = true;
     },
     searchFunc: function() {
       this.pageIndex = 1;
@@ -515,6 +565,14 @@ export default {
     resetFunc() {
       this.$refs["formInline"].resetFields();
     }
+  },
+  watch: {
+    "formInline.company"() {
+      if (this.formInline.company === "") {
+        this.isWatchName = false;
+        this.isShowNameList = false;
+      }
+    }
   }
 };
 </script>
@@ -530,8 +588,26 @@ export default {
   .filter {
     padding: 10px 40px;
     border-bottom: 1px solid #e2e9f1;
+     position: relative;
     .ivu-form-item {
       margin-bottom: 0;
+    }
+    .search-list {
+      width: 300px;
+      height: 250px;
+      background-color: #fff;
+      border: 1px solid rgb(226, 223, 223);
+      position: absolute;
+      left: 40px;
+      top: 50px;
+      z-index: 999;
+      border-radius: 3px;
+      overflow-y: auto;
+      .item {
+        height: 30px;
+        line-height: 30px;
+        padding-left: 15px;
+      }
     }
   }
   .sp-company {

@@ -5,7 +5,7 @@
       <div class="filter">
         <Form ref="formInline" :model="formInline" :rules="ruleInline" inline>
           <FormItem prop="name">
-            <Input type="text" v-model="formInline.name" size="large" placeholder="企业名称"></Input>
+            <Input type="text" v-model="formInline.name" size="large" placeholder="企业名称" @input="nameChange"></Input>
           </FormItem>
           <FormItem prop="phone">
             <Input type="text" v-model="formInline.phone" size="large" placeholder="管理员手机"></Input>
@@ -16,7 +16,7 @@
           </FormItem>
         </Form>
         <div class="search-list" v-if="isShowNameList">
-          <div class="item" v-for="(v,i) in 10" :key="i">11111</div>
+          <div class="item" v-for="(v,i) in searchList" :key="i" @click="choseItem(v)">{{v.EnterpriseName}}</div>
         </div>
       </div>
       <div class="list">
@@ -149,6 +149,7 @@ export default {
       modal: false,
       chosedValue:{},
       editValue: {},
+      searchList:[],
       isShowNameList:false,
       isWatchName:true
     };
@@ -196,7 +197,28 @@ export default {
       this.getList();
     },
     searchName() {
-      console.log('111')
+      let vm = this;
+      axios
+        .get(getURL("CommandHandler.ashx"),{
+          params: {
+            method: "GetEnterpriseName",
+            enterprisename: vm.formInline.name
+          }
+        }).then(function(res) {
+          if(res.data.length > 0) {
+            vm.searchList = res.data;
+            vm.isShowNameList = true;
+          }
+          console.log(res)
+        })
+    },
+    choseItem(v) {
+      this.isWatchName = false;
+      this.formInline.name = v.EnterpriseName;
+      this.isShowNameList = false;
+    },
+    nameChange() {
+      this.isWatchName = true;
     },
     searchFunc: function() {
       this.pageIndex = 1;
@@ -290,6 +312,14 @@ export default {
     resetFunc() {
       this.$refs["formInline"].resetFields();
       this.getList();
+    }
+  },
+  watch:{
+    "formInline.name"() {
+      if(this.formInline.name === "") {
+        this.isWatchName = false;
+        this.isShowNameList = false;
+      }
     }
   }
 };

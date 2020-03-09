@@ -413,6 +413,7 @@ export default {
         });
     },
     handleSuccess(res) {
+      console.log(res)
       if (res.result === "failure") {
         this.$Message.error({
           content: res.message
