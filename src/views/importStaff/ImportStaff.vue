@@ -102,7 +102,12 @@
         </div>
       </div>
       <div class="list">
-        <Table :columns="columns" :data="list" @on-selection-change="selectChange" :loading="loading"></Table>
+        <Table
+          :columns="columns"
+          :data="list"
+          @on-selection-change="selectChange"
+          :loading="loading"
+        ></Table>
         <div class="page">
           <Page :total="total" :page-size="pageSize" :current="pageIndex" @on-change="changePage" />
         </div>
@@ -330,11 +335,14 @@ export default {
           type = 2;
           break;
       }
+      // if (!this.$route.query.name || !this.$route.query.id) {
+      //   return;
+      // }
       vm.loading = true;
       axios
         .get(getURL("CommandHandler.ashx"), {
           params: {
-            method: "GetEnterpriseData",
+            method: "GetEnterpriseData1",
             company: this.$route.query.name,
             name: this.formInline.name,
             idCard: this.formInline.id,
@@ -413,7 +421,7 @@ export default {
         });
     },
     handleSuccess(res) {
-      console.log(res)
+      console.log(res);
       if (res.result === "failure") {
         this.$Message.error({
           content: res.message
