@@ -117,7 +117,7 @@
         </div>
         <div class="right-foot">
           <div class="sub-title list-bg mb15">
-            <p>症状检测</p>
+            <p>症状监测</p>
           </div>
           <div class="list-row list-row-head">
             <div class="list-item-one">序号</div>
@@ -705,7 +705,7 @@ export default {
               orient: "vertical",
               left: "right",
               top: "middle",
-              data: ["重点地区", "一般重点地区", "一般地区", "其他"],
+              data: ["重点地区", "一般重点地区", "一般地区", "其他","国外人数"],
               textStyle: {
                 color: "#fff"
               },
@@ -722,7 +722,8 @@ export default {
                   { value: res.data[0].ZDDQCount, name: "重点地区" },
                   { value: res.data[0].YBZDDQCount, name: "一般重点地区" },
                   { value: res.data[0].YBDQCount, name: "一般地区" },
-                  { value: res.data[0].QTDQCount, name: "其他" }
+                  { value: res.data[0].QTDQCount, name: "其他" },
+                  { value: res.data[0].WGCount, name: "国外人数" },
                 ],
                 label: {
                   formatter: "{b}({c})",

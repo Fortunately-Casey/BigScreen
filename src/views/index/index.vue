@@ -60,6 +60,13 @@
               <Option value="大于37.3">大于37.3</Option>
             </Select>
           </FormItem>
+          <FormItem prop="personType">
+            <Select v-model="formInline.personType" size="large" placeholder="身份类型" style="width:150px;">
+              <Option value>全部</Option>
+              <Option value="是">国外</Option>
+              <Option value="否">国内</Option>
+            </Select>
+          </FormItem>
           <FormItem prop="date">
             <DatePicker
               type="daterange"
@@ -245,7 +252,8 @@ export default {
         type: "",
         heat: "",
         startDate: "",
-        endDate: ""
+        endDate: "",
+        personType:""
       },
       formImport: {
         casenumber: "",
@@ -405,7 +413,8 @@ export default {
             pageSize: this.pageSize,
             type: type,
             startdate: this.formInline.startDate,
-            enddate: this.formInline.endDate
+            enddate: this.formInline.endDate,
+            foreign: this.formInline.personType
           }
         })
         .then(function(res) {
