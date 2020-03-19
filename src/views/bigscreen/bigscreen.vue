@@ -1071,8 +1071,8 @@ export default {
             nameTextStyle: {
               color: "#fff"
             },
-            max: 40000, // 计算最大值
-            interval: Math.ceil(40000 / 5),
+            max: 50000, // 计算最大值
+            interval: Math.ceil(50000 / 5),
             axisLabel: {
               color: "#fff"
             },
