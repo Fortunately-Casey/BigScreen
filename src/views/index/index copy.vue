@@ -15,7 +15,7 @@
                 @on-blur="normalText"
                 id="company"
               ></Input>
-              <span class="sp-company" :class="{'highlight-on':h_company}">学校名字</span>
+              <span class="sp-company" :class="{'highlight-on':h_company}">所在企业</span>
             </div>
           </FormItem>
           <FormItem prop="name">
@@ -61,12 +61,7 @@
             </Select>
           </FormItem>
           <FormItem prop="personType">
-            <Select
-              v-model="formInline.personType"
-              size="large"
-              placeholder="身份类型"
-              style="width:150px;"
-            >
+            <Select v-model="formInline.personType" size="large" placeholder="身份类型" style="width:150px;">
               <Option value>全部</Option>
               <Option value="是">国外</Option>
               <Option value="否">国内</Option>
@@ -84,7 +79,7 @@
           </FormItem>
           <FormItem>
             <Button type="primary" size="large" class="btn-search" @click="searchFunc">查询</Button>
-            <!-- <Button type="warning" size="large" class="btn-reset" @click="resetFunc">重置</Button> -->
+            <Button type="warning" size="large" class="btn-reset" @click="resetFunc">重置</Button>
           </FormItem>
         </Form>
         <div class="search-list" v-if="isShowNameList">
@@ -96,7 +91,7 @@
           >{{v.EnterpriseName}}</div>
         </div>
       </div>
-      <!-- <div class="filter">
+      <div class="filter">
         <Form
           :model="formImport"
           :rules="ruleInline"
@@ -119,7 +114,7 @@
             <Button type="primary" size="large" class="btn-search" @click="importPerson">导入</Button>
           </FormItem>
         </Form>
-      </div>-->
+      </div>
       <div class="controls">
         <!-- <div class="tabs clearfix">
                     <div :class="{'on':tab=='全部'}" @click="changeTab('全部')">全部</div>
@@ -137,7 +132,8 @@
                         <a href="javascript:void(0);" class="export export-new">导入密接数据</a>
           </Upload>-->
           <a href="javascript:void(0);" class="export" @click="exportData">导出数据</a>
-          <a href="javascript:void(0);" class="export" @click="exportInformation">导出异常</a>
+          <a href="javascript:void(0);" class="export" @click="exportInformation">导出预警信息</a>
+          <a href="javascript:void(0);" class="export" @click="exportSymptom">导出症状检测详情列表</a>
           <!-- <Upload
             :action="uploadUrl"
             class="fl"
@@ -164,8 +160,8 @@
       </div>
       <div class="copyright">2020&copy南通市测绘院有限公司</div>
       <Modal v-model="modal" width="840">
-        <div slot="header" :style="'display:flex;'">
-          <div class="detail-logo"></div><p class="m-title">详细信息</p>
+        <div slot="header">
+          <p class="m-title">详细信息</p>
         </div>
         <div class="info">
           <div class="info-item">
@@ -257,7 +253,7 @@ export default {
         heat: "",
         startDate: "",
         endDate: "",
-        personType: ""
+        personType:""
       },
       formImport: {
         casenumber: "",
@@ -323,7 +319,7 @@ export default {
                     href: "javascript:void(0);"
                   },
                   style: {
-                    color: "#16d0a0"
+                    color: "#3282CE"
                   },
                   on: {
                     click: () => {
@@ -601,7 +597,7 @@ export default {
   .filter {
     padding: 10px 40px;
     border-bottom: 1px solid #e2e9f1;
-    position: relative;
+     position: relative;
     .ivu-form-item {
       margin-bottom: 0;
     }
@@ -634,7 +630,7 @@ export default {
     color: #ccd4df;
   }
   .sp-company.highlight-on {
-    color: #16d0a0;
+    color: #57a3f3;
   }
   .controls {
     height: 36px;
@@ -650,13 +646,12 @@ export default {
       display: block;
       height: 35px;
       line-height: 36px;
-      color: #16d0a0;
+      color: #3282ce;
       margin-right: 20px;
       padding-left: 20px;
     }
     a.export {
-      background: url(../../assets/images/up1.png) 0 center no-repeat;
-      background-size: 15px 15px;
+      background: url(../../assets/images/up.png) 0 center no-repeat;
       padding-right: 20px;
       position: relative;
     }
@@ -668,7 +663,7 @@ export default {
       content: "";
       width: 1px;
       height: 12px;
-      background-color: #16d0a0;
+      background-color: #3282ce;
       position: absolute;
       right: 0;
       top: 50%;
@@ -705,8 +700,7 @@ export default {
   }
   .list {
     flex: 1;
-    // background: #e2e9f1 url(../../assets/images/ch.png) left bottom no-repeat;
-    background: #e2f1ea;
+    background: #e2e9f1 url(../../assets/images/ch.png) left bottom no-repeat;
     -webkit-background-size: 100%;
     background-size: 100%;
     padding: 10px 40px 40px;
@@ -745,7 +739,6 @@ export default {
       border-spacing: 0px 5px;
     }
   }
-
   .m-title {
     padding-left: 20px;
     background: url(../../assets/images/text.png) left center no-repeat;
@@ -771,13 +764,4 @@ export default {
     }
   }
 }
-  .detail-logo {
-    width: 16px;
-    height: 16px;
-    background: url("../../assets/images/detail-logo.png") no-repeat;
-    background-size: 100% 100%;
-    float: left;
-    transform: translateY(2px);
-    margin-right: 8px;
-  }
 </style>

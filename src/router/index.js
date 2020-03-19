@@ -5,7 +5,11 @@ Vue.use(VueRouter);
 
 const routes = [
   {
-    path: "/",
+    path:"/",
+    redirect:"login"
+  },
+  {
+    path: "/index",
     name: "index",
     component: resolve => require(["../views/index/index.vue"], resolve)
   },
@@ -23,6 +27,11 @@ const routes = [
     path: "/manage",
     name:"manage",
     component: resolve => require(["../views/manage/Manage.vue"], resolve)
+  },
+  {
+    path: "/login",
+    name:"login",
+    component: resolve => require(["../views/login/Login.vue"], resolve)
   }
 ];
 const routerPush = VueRouter.prototype.push
