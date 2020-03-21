@@ -17,8 +17,16 @@ module.exports = {
     /* 自动打开浏览器 */
     open: true,
     /* 设置为0.0.0.0则所有的地址均能访问 */
-    // eslint-disable-next-line prettier/prettier
     host: '0.0.0.0',
-    port: 8080
+    port: 8080,
+    proxy: {
+      "/api": {
+        /* 目标代理服务器地址 */
+        target: "https://yqfk.ntkfqjy.com:20000",
+        // target: "http://192.168.3.153:10010",
+        /* 允许跨域 */
+        changeOrigin: true
+      }
+    }
   }
 };

@@ -1,22 +1,54 @@
 <template>
   <div class="container">
-    <Header></Header>
+    <Header :userName="userName"></Header>
     <div class="main">
       <div class="filter">
         <Form ref="formInline" :model="formInline" :rules="ruleInline" inline>
-          <FormItem prop="company">
+          <FormItem v-if="isSuperAdmin" prop="school">
+            <Select
+              v-model="formInline.school"
+              size="large"
+              placeholder="学校"
+              @on-change="choseSchool"
+              style="width:250px;"
+            >
+              <Option
+                v-for="(item,index) in schoolList"
+                :key="index"
+                :value="item.enterpriseName"
+              >{{item.enterpriseName}}</Option>
+            </Select>
+          </FormItem>
+          <FormItem prop="school" v-else>
             <div style="position:relative;" @mouseover="highlightText" @mouseout="normalText">
               <Input
                 type="text"
-                v-model="formInline.company"
+                v-model="formInline.school"
                 size="large"
                 @input="nameChange"
                 @on-focus="highlightText"
                 @on-blur="normalText"
-                id="company"
+                id="school"
+                disabled
+                style="width:250px;"
               ></Input>
-              <span class="sp-company" :class="{'highlight-on':h_company}">学校名字</span>
+              <span class="sp-school" :class="{'highlight-on':h_school}">学校名字</span>
             </div>
+          </FormItem>
+          <FormItem prop="class">
+            <Select
+              v-model="formInline.class"
+              size="large"
+              placeholder="班级"
+              style="width:150px;"
+              @on-change="classChange"
+            >
+              <Option
+                v-for="(item,index) in classList"
+                :key="index"
+                :value="item.enterpriseName"
+              >{{item.enterpriseName}}</Option>
+            </Select>
           </FormItem>
           <FormItem prop="name">
             <Input
@@ -27,9 +59,9 @@
               style="width:130px;"
             ></Input>
           </FormItem>
-          <FormItem prop="id">
+          <!-- <FormItem prop="id">
             <Input type="text" v-model="formInline.id" size="large" placeholder="身份证号"></Input>
-          </FormItem>
+          </FormItem>-->
           <FormItem prop="tel">
             <Input
               type="text"
@@ -39,48 +71,77 @@
               style="width:130px;"
             ></Input>
           </FormItem>
-          <FormItem prop="type">
-            <Select
-              v-model="formInline.type"
-              size="large"
-              placeholder="外防输入类型"
-              style="width:150px;"
-            >
-              <Option value>全部</Option>
-              <Option value="重点地区">重点地区</Option>
-              <Option value="一般重点地区">一般重点地区</Option>
-              <Option value="一般地区">一般地区</Option>
-              <Option value="其他">其他</Option>
-            </Select>
-          </FormItem>
           <FormItem prop="heat">
-            <Select v-model="formInline.heat" size="large" placeholder="体温" style="width:150px;">
+            <Select v-model="formInline.heat" size="large" placeholder="体温段查询" style="width:120px;">
               <Option value>全部</Option>
-              <Option value="小于等于37.3">小于等于37.3</Option>
-              <Option value="大于37.3">大于37.3</Option>
+              <Option value="0">小于37.3</Option>
+              <Option value="1">大于等于37.3</Option>
             </Select>
           </FormItem>
-          <FormItem prop="personType">
+          <FormItem prop="discomfort">
             <Select
-              v-model="formInline.personType"
+              v-model="formInline.discomfort"
               size="large"
-              placeholder="身份类型"
+              placeholder="是否不适"
               style="width:150px;"
             >
               <Option value>全部</Option>
-              <Option value="是">国外</Option>
-              <Option value="否">国内</Option>
+              <Option value="true">是</Option>
+              <Option value="false">否</Option>
+            </Select>
+          </FormItem>
+          <FormItem prop="isInNanTong">
+            <Select
+              v-model="formInline.isInNanTong"
+              size="large"
+              placeholder="当前是否在南通"
+              style="width:150px;"
+            >
+              <Option value>全部</Option>
+              <Option value="true">是</Option>
+              <Option value="false">否</Option>
+            </Select>
+          </FormItem>
+          <FormItem prop="punchStatus">
+            <Select
+              v-model="formInline.punchStatus"
+              size="large"
+              placeholder="打卡状态"
+              style="width:150px;"
+            >
+              <Option value="3">全部</Option>
+              <Option value="4">未审核</Option>
+              <Option value="5">已审核</Option>
+              <Option value="6">异常</Option>
+              <Option value="0">未打卡</Option>
+              <Option value="1">已打卡</Option>
             </Select>
           </FormItem>
           <FormItem prop="date">
             <DatePicker
-              type="daterange"
+              type="date"
               size="large"
+              v-model="formInline.date"
               placement="bottom-end"
               placeholder="选择日期"
               @on-change="changeDate"
-              style="width: 250px"
+              style="width: 200px"
             ></DatePicker>
+          </FormItem>
+          <FormItem prop="status">
+            <Select
+              v-model="formInline.status"
+              size="large"
+              placeholder="当前状态"
+              style="width:150px;"
+            >
+              <Option value>全部</Option>
+              <Option value="正常">正常</Option>
+              <Option value="隔离中">隔离中</Option>
+              <Option value="发热门诊留观">发热门诊留观</Option>
+              <Option value="定点医院就诊">定点医院就诊</Option>
+              <Option value="其他">其他</Option>
+            </Select>
           </FormItem>
           <FormItem>
             <Button type="primary" size="large" class="btn-search" @click="searchFunc">查询</Button>
@@ -96,59 +157,11 @@
           >{{v.EnterpriseName}}</div>
         </div>
       </div>
-      <!-- <div class="filter">
-        <Form
-          :model="formImport"
-          :rules="ruleInline"
-          inline
-          :style="'text-align:right'"
-        >
-          <FormItem prop="name">
-            <Input
-              type="text"
-              v-model="formImport.casenumber"
-              size="large"
-              placeholder="病例人数"
-              style="width:130px;"
-            ></Input>
-          </FormItem>
-          <FormItem prop="id">
-            <Input type="text" v-model="formImport.contactnumber" size="large" placeholder="密接人数"></Input>
-          </FormItem>
-          <FormItem>
-            <Button type="primary" size="large" class="btn-search" @click="importPerson">导入</Button>
-          </FormItem>
-        </Form>
-      </div>-->
       <div class="controls">
-        <!-- <div class="tabs clearfix">
-                    <div :class="{'on':tab=='全部'}" @click="changeTab('全部')">全部</div>
-                    <div :class="{'on':tab=='高危'}" @click="changeTab('高危')">高危</div>
-                    <div :class="{'on':tab=='中危'}" @click="changeTab('中危')">中危</div>
-                    <div :class="{'on':tab=='低危'}" @click="changeTab('低危')">低危</div>
-        </div>-->
         <div class="data-handle">
-          <!-- <Upload :action="uploadUrlMJ" class="fl"
-                            :on-success="handleSuccess"
-                            :on-error="handleError"
-                            :on-format-error="handleFormatError"
-                            :show-upload-list="false"
-                            :format="['xls','xlsx']">
-                        <a href="javascript:void(0);" class="export export-new">导入密接数据</a>
-          </Upload>-->
           <a href="javascript:void(0);" class="export" @click="exportData">导出数据</a>
           <a href="javascript:void(0);" class="export" @click="exportInformation">导出异常</a>
-          <!-- <Upload
-            :action="uploadUrl"
-            class="fl"
-            :on-success="handleSuccess"
-            :on-error="handleError"
-            :on-format-error="handleFormatError"
-            :show-upload-list="false"
-            :format="['xls','xlsx']"
-          >
-            <a href="javascript:void(0);" class="import">导入数据</a>
-          </Upload>-->
+          <a href="javascript:void(0);" class="export" @click="exportSummary">导出汇总</a>
         </div>
       </div>
       <div class="list">
@@ -165,67 +178,68 @@
       <div class="copyright">2020&copy南通市测绘院有限公司</div>
       <Modal v-model="modal" width="840">
         <div slot="header" :style="'display:flex;'">
-          <div class="detail-logo"></div><p class="m-title">详细信息</p>
+          <div class="detail-logo"></div>
+          <p class="m-title">详细信息</p>
         </div>
         <div class="info">
           <div class="info-item">
             <div class="info-row">
               <label>姓名：</label>
-              <span>{{info.Name}}</span>
+              <span>{{info.name}}</span>
             </div>
             <div class="info-row">
               <label>联系电话：</label>
-              <span>{{info.Mobile}}</span>
+              <span>{{info.sysUserID}}</span>
             </div>
             <div class="info-row">
               <label>身份证号：</label>
-              <span>{{info.IdCard}}</span>
+              <span>{{info.idCard}}</span>
             </div>
             <div class="info-row">
-              <label>所在企业：</label>
-              <span>{{info.EnterpriseName}}</span>
+              <label>性别：</label>
+              <span>{{info.sex}}</span>
             </div>
             <div class="info-row">
-              <label>年龄：</label>
-              <span>{{info.Age}}</span>
+              <label>学校：</label>
+              <span>{{info.parentEnterpriseName}}</span>
             </div>
             <div class="info-row">
-              <label>有无咳嗽等症状：</label>
-              <span>{{info.Cough?"有":"无"}}</span>
+              <label>班级：</label>
+              <span>{{info.enterpriseName}}</span>
             </div>
             <div class="info-row">
-              <label>1月23日至今是否离开过南通：</label>
-              <span>{{info.LeaveNT?"是":"否"}}</span>
+              <label>现居住地：</label>
+              <span>{{ info.currCounty + info.currStreet + info.currAddress }}</span>
             </div>
           </div>
           <div class="info-item">
             <div class="info-row">
               <label>体温：</label>
-              <span>{{info.Temp}}℃</span>
+              <span>{{info.temp}}℃</span>
+            </div>
+            <div class="info-row">
+              <label>有无咳嗽等症状：</label>
+              <span>{{info.cough?'是':'否'}}</span>
+            </div>
+            <div class="info-row">
+              <label>3月2日至今是否离开过南通：</label>
+              <span>{{info.leaveNT?'是':'否'}}</span>
             </div>
             <div class="info-row">
               <label>返通前地址：</label>
-              <span>{{info.BeforeReturnNtAddress}}</span>
+              <span>{{info.beforeReturnNtProvince + info.beforeReturnNtCity + info.beforeReturnNtCounty + info.beforeReturnNtAddress }}</span>
             </div>
             <div class="info-row">
               <label>返通日期：</label>
-              <span>{{info.ReturnNTDate}}</span>
-            </div>
-            <div class="info-row">
-              <label>返通居住地：</label>
-              <span>{{info.NtAddress}}</span>
-            </div>
-            <div class="info-row">
-              <label>是否复工：</label>
-              <span>{{info.RecoveryWork?"是":"否"}}</span>
-            </div>
-            <div class="info-row">
-              <label>复工日期：</label>
-              <span>{{info.RecoveryWorkDate||""}}</span>
+              <span>{{info.returnNTDate}}</span>
             </div>
             <div class="info-row">
               <label>目前状态：</label>
-              <span>{{info.CurrStatus}}</span>
+              <span>{{info.currStatus}}</span>
+            </div>
+            <div class="info-row">
+              <label>开始隔离日期：</label>
+              <span>{{info.isolationStartDate}}</span>
             </div>
           </div>
         </div>
@@ -243,22 +257,38 @@
 import Header from "../../components/Header.vue";
 import $ from "jquery";
 import axios from "axios";
-import { getURL, debounce } from "../../common/tool.js";
+import { getURL, debounce, Todate } from "../../common/tool.js";
+import {
+  getPermissionEnterprises,
+  getEnterprisePeriodPlaceList,
+  exportEnterprisePeriodPlaceList,
+  exportEnterpriseGroupList,
+  exportEnterpriseBaseList
+} from "@/api/manage.js";
 export default {
   name: "index",
   data() {
     return {
+      isSuperAdmin: false,
+      userName: "",
       formInline: {
-        company: "",
+        school: "",
+        class: "",
         name: "",
         id: "",
         tel: "",
-        type: "",
         heat: "",
-        startDate: "",
-        endDate: "",
-        personType: ""
+        discomfort: "",
+        isInNanTong: "",
+        date: new Date(),
+        status: "",
+        parentEnterpriseID: "",
+        enterpriseID: "",
+        punchStatus: "3"
       },
+      schoolList: [],
+      classList: [],
+      allClass: [],
       formImport: {
         casenumber: "",
         contactnumber: ""
@@ -268,46 +298,56 @@ export default {
       uploadUrlMJ: getURL("ImportCloseContact.ashx"),
       ids: [],
       ruleInline: {},
-      h_company: false,
+      h_school: false,
       tab: "全部",
       columns: [
         {
           title: "序号",
-          key: "rowIndex",
+          key: "id",
           align: "center",
           width: 80
         },
         {
           title: "姓名",
-          key: "Name",
+          key: "name",
           align: "center",
           width: 100
         },
         {
           title: "身份证号",
-          key: "IdCard",
+          key: "idCard",
           align: "center"
         },
         {
           title: "联系电话",
-          key: "Mobile",
+          key: "sysUserID",
           align: "center"
         },
         {
-          title: "所在企业",
-          key: "EnterpriseName",
+          title: "学校",
+          key: "parentEnterpriseName",
+          align: "center"
+        },
+        {
+          title: "班级",
+          key: "enterpriseName",
           align: "center"
         },
         {
           title: "体温",
-          key: "Temp",
+          key: "temp",
           align: "center",
           width: 150
         },
         {
-          title: "上报时间",
-          key: "PeriodPlaceTime",
-          align: "center"
+          title: "是否不适",
+          key: "cough",
+          align: "center",
+          render: (h, params) => {
+            return h("div", [
+              h("div", {}, params.row.cough == true ? "是" : "否")
+            ]);
+          }
         },
         {
           title: "操作",
@@ -327,7 +367,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.showDetails(params.row.ID);
+                      this.showDetails(params);
                     }
                   }
                 },
@@ -355,77 +395,108 @@ export default {
   },
   created() {
     let vm = this;
-    this.$watch(
-      "formInline.company",
-      debounce((newValue, oldValue) => {
-        if (!vm.isWatchName) {
-          return;
-        }
-        vm.searchName();
-      }, 500)
-    );
+    // this.$watch(
+    //   "formInline.school",
+    //   debounce((newValue, oldValue) => {
+    //     if (!vm.isWatchName) {
+    //       return;
+    //     }
+    //     vm.searchName();
+    //   }, 500)
+    // );
+    // 获取学校跟班级
+    vm.getPermissionEnterprises();
   },
-  mounted() {
-    this.getList();
-  },
+  mounted() {},
   methods: {
+    getPermissionEnterprises() {
+      let vm = this;
+      getPermissionEnterprises({
+        enterpriseID: vm.$route.query.enterpriseID
+      }).then(resp => {
+        if (vm.$route.query.level === "Root") {
+          vm.isSuperAdmin = true;
+          vm.userName = "KFQSHSYJ";
+          vm.schoolList = resp.data.data.groupPermissionList;
+          vm.formInline.school =
+            resp.data.data.groupPermissionList[0].enterpriseName;
+          let parentEnterpriseID =
+            resp.data.data.groupPermissionList[0].enterpriseID;
+          vm.formInline.parentEnterpriseID = parentEnterpriseID;
+          vm.allClass = resp.data.data.basePermissionList;
+          vm.classList = vm.allClass.filter(item => {
+            return item.parentEnterpriseID == parentEnterpriseID;
+          });
+          vm.formInline.class = vm.classList[0].enterpriseName;
+          vm.formInline.enterpriseID = vm.classList[0].enterpriseID;
+          vm.getList();
+        } else {
+          vm.userName = resp.data.data.basePermissionList[0].adminUserID;
+          vm.isSuperAdmin = false;
+          vm.classList = resp.data.data.basePermissionList;
+          vm.formInline.school =
+            resp.data.data.groupPermissionList[0].enterpriseName;
+          vm.formInline.parentEnterpriseID =
+            resp.data.data.groupPermissionList[0].enterpriseID;
+          vm.formInline.class =
+            resp.data.data.basePermissionList[0].enterpriseName;
+          vm.formInline.enterpriseID = vm.classList[0].enterpriseID;
+          vm.getList();
+        }
+      });
+    },
+    choseSchool(item) {
+      let chosedSchool = this.schoolList.filter(v => v.enterpriseName === item);
+      this.formInline.parentEnterpriseID = chosedSchool[0].enterpriseID;
+      this.classList = this.allClass.filter(item => {
+        return item.parentEnterpriseID == chosedSchool[0].enterpriseID;
+      });
+      this.formInline.class = this.classList[0].enterpriseName;
+      this.formInline.enterpriseID = this.classList[0].enterpriseID;
+    },
+    classChange(item) {
+      let chosedClass = this.classList.filter(v => v.enterpriseName === item);
+      this.formInline.enterpriseID = chosedClass.enterpriseID;
+    },
     highlightText() {
-      this.h_company = true;
+      this.h_school = true;
     },
     normalText() {
       if (
-        $("#company")
+        $("#school")
           .find("input")
           .is(":focus")
       )
         return;
-      this.h_company = false;
+      this.h_school = false;
     },
     changeTab(tab) {
       this.tab = tab;
       this.searchFunc();
     },
     getList() {
-      let type = "";
-      let vm = this;
-      switch (this.tab) {
-        case "全部":
-          type = "";
-          break;
-        case "高危":
-          type = 0;
-          break;
-        case "中危":
-          type = 1;
-          break;
-        case "低危":
-          type = 2;
-          break;
-      }
+      var vm = this;
+      let params = {
+        enterpriseID: vm.formInline.enterpriseID, //班级编号
+        parentEnterpriseID: vm.formInline.parentEnterpriseID, //学校编号
+        periodPlaceDate: Todate(vm.formInline.date), //打卡日期
+        status: vm.formInline.punchStatus, //状态，3:全部，4:未审核，5已审核，6:异常，0:未打卡，1:已打卡
+        name: vm.formInline.name, //姓名
+        mobile: vm.formInline.tel, //手机号
+        // idCard: vm.formInline.id, //身份证号码
+        inNT: vm.formInline.isInNanTong,
+        tempFlag: vm.formInline.heat, //体温范围，1:大于等于37.3,0:小于37.3
+        cough: vm.formInline.discomfort, //是否不适，true,false
+        currStatus: vm.formInline.status, //当前状态，正常、隔离中、发热门诊留观、定点医院就诊、其他
+        page: vm.pageIndex,
+        pageSize: vm.pageSize
+      };
       this.loading = true;
-      axios
-        .get(getURL("CommandHandler.ashx"), {
-          params: {
-            method: "GetEnterpriseData",
-            company: this.formInline.company,
-            name: this.formInline.name,
-            idCard: this.formInline.id,
-            phone: this.formInline.tel,
-            inputType: this.formInline.type,
-            temp: this.formInline.heat,
-            pageIndex: this.pageIndex,
-            pageSize: this.pageSize,
-            type: type,
-            startdate: this.formInline.startDate,
-            enddate: this.formInline.endDate,
-            foreign: this.formInline.personType
-          }
-        })
-        .then(function(res) {
-          vm.loading = false;
-          vm.list = res.data.list || [];
-          vm.total = res.data.recordCount;
-        });
+      getEnterprisePeriodPlaceList(params).then(resp => {
+        this.loading = false;
+        vm.list = resp.data.data || [];
+        vm.total = resp.data.page.totalCount;
+      });
     },
     changePage(pageIndex) {
       this.pageIndex = pageIndex;
@@ -437,7 +508,7 @@ export default {
         .get(getURL("CommandHandler.ashx"), {
           params: {
             method: "GetEnterpriseName",
-            enterprisename: vm.formInline.company
+            enterprisename: vm.formInline.school
           }
         })
         .then(function(res) {
@@ -450,7 +521,7 @@ export default {
     },
     choseItem(v) {
       this.isWatchName = false;
-      this.formInline.company = v.EnterpriseName;
+      this.formInline.school = v.EnterpriseName;
       this.isShowNameList = false;
     },
     nameChange() {
@@ -460,20 +531,11 @@ export default {
       this.pageIndex = 1;
       this.getList();
     },
-    showDetails(id) {
+    showDetails(params) {
+      console.log(params);
       let vm = this;
-      axios
-        .get(getURL("CommandHandler.ashx"), {
-          params: {
-            method: "GetEnterpriseDetail",
-            id: id
-          }
-        })
-        .then(function(res) {
-          console.log(res.data);
-          vm.info = res.data[0];
-          vm.modal = true;
-        });
+      vm.info = params.row;
+      vm.modal = true;
     },
     importPerson() {
       let vm = this;
@@ -505,46 +567,74 @@ export default {
       }
     },
     changeDate(date) {
-      this.formInline.startDate = date[0];
-      this.formInline.endDate = date[1];
+      console.log(date);
+      // this.formInline.startDate = date[0];
+      // this.formInline.endDate = date[1];
     },
     exportData() {
-      if (this.total / this.pageSize > 1000) {
-        this.$Message.error({
-          content: "请进行条件筛选后，再进行导出！"
-        });
-        return;
+      var vm = this;
+      let params;
+      if (vm.$route.query.level === "Root") {
+        params = {
+          periodPlaceDate: Todate(vm.formInline.date), //打卡日期
+          status: "3" //状态，3:全部，4:未审核，5已审核，6:异常，0:未打卡，1:已打卡
+        };
+      } else {
+        params = {
+          parentEnterpriseID: vm.$route.query.enterpriseID,
+          periodPlaceDate: Todate(vm.formInline.date), //打卡日期
+          status: "3" //状态，3:全部，4:未审核，5已审核，6:异常，0:未打卡，1:已打卡
+        };
       }
-      axios
-        .get(getURL("CommandHandler.ashx"), {
-          params: {
-            method: "ExportQueryData",
-            company: this.formInline.company,
-            name: this.formInline.name,
-            idCard: this.formInline.id,
-            phone: this.formInline.tel,
-            inputType: this.formInline.type,
-            temp: this.formInline.heat,
-            startdate: this.formInline.startDate,
-            enddate: this.formInline.endDate
-          }
-        })
-        .then(function(res) {
-          window.location.href = getURL(res.data);
-          console.log(res);
-        });
+      exportEnterprisePeriodPlaceList(params).then(resp => {
+        if (resp.data.success) {
+          window.location.href = `https://yqfk.ntkfqjy.com:20000${resp.data.data}`;
+        }
+      });
     },
-    //导出预警信息
+    //导出异常信息
     exportInformation() {
-      axios
-        .get(getURL("CommandHandler.ashx"), {
-          params: {
-            method: "ExportYCYJData"
+      var vm = this;
+      let params;
+      if (vm.$route.query.level === "Root") {
+        params = {
+          periodPlaceDate: Todate(vm.formInline.date), //打卡日期
+          status: "6" //状态，3:全部，4:未审核，5已审核，6:异常，0:未打卡，1:已打卡
+        };
+      } else {
+        params = {
+          parentEnterpriseID: vm.$route.query.enterpriseID,
+          periodPlaceDate: Todate(vm.formInline.date), //打卡日期
+          status: "6" //状态，3:全部，4:未审核，5已审核，6:异常，0:未打卡，1:已打卡
+        };
+      }
+      exportEnterprisePeriodPlaceList(params).then(resp => {
+        if (resp.data.success) {
+          window.location.href = `https://yqfk.ntkfqjy.com:20000${resp.data.data}`;
+        }
+      });
+    },
+    exportSummary() {
+      let vm = this;
+      if (vm.$route.query.level === "Root") {
+        exportEnterpriseGroupList({
+          enterpriseID: vm.$route.query.enterpriseID,
+          periodPlaceDate: Todate(vm.formInline.date)
+        }).then(resp => {
+          if (resp.data.success) {
+            window.location.href = `https://yqfk.ntkfqjy.com:20000${resp.data.data}`;
           }
-        })
-        .then(res => {
-          window.location.href = getURL(res.data);
         });
+      } else {
+        exportEnterpriseBaseList({
+          enterpriseID: vm.$route.query.enterpriseID,
+          periodPlaceDate: Todate(vm.formInline.date)
+        }).then(resp => {
+          if (resp.data.success) {
+            window.location.href = `https://yqfk.ntkfqjy.com:20000${resp.data.data}`;
+          }
+        });
+      }
     },
     //导出症状检查详细信息
     exportSymptom() {
@@ -580,8 +670,8 @@ export default {
     }
   },
   watch: {
-    "formInline.company"() {
-      if (this.formInline.company === "") {
+    "formInline.school"() {
+      if (this.formInline.school === "") {
         this.isWatchName = false;
         this.isShowNameList = false;
       }
@@ -594,7 +684,9 @@ export default {
 .container {
   height: 100%;
   .main {
-    height: calc(~"100% - 60px");
+    padding-top: 60px;
+    // height: calc(~"100% - 60px");
+    height: 100%;
     display: flex;
     flex-direction: column;
   }
@@ -623,7 +715,7 @@ export default {
       }
     }
   }
-  .sp-company {
+  .sp-school {
     background-color: #fff;
     position: absolute;
     left: 30px;
@@ -633,7 +725,7 @@ export default {
     line-height: 1;
     color: #ccd4df;
   }
-  .sp-company.highlight-on {
+  .sp-school.highlight-on {
     color: #16d0a0;
   }
   .controls {
@@ -771,13 +863,13 @@ export default {
     }
   }
 }
-  .detail-logo {
-    width: 16px;
-    height: 16px;
-    background: url("../../assets/images/detail-logo.png") no-repeat;
-    background-size: 100% 100%;
-    float: left;
-    transform: translateY(2px);
-    margin-right: 8px;
-  }
+.detail-logo {
+  width: 16px;
+  height: 16px;
+  background: url("../../assets/images/detail-logo.png") no-repeat;
+  background-size: 100% 100%;
+  float: left;
+  transform: translateY(2px);
+  margin-right: 8px;
+}
 </style>

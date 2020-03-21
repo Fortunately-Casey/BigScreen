@@ -11,22 +11,58 @@
       <div class="login-box">
         <div class="user">
           <div class="name">用户名：</div>
-          <input type="text" />
+          <input type="text" v-model="userID" />
         </div>
         <div class="password">
           <div class="name">密码：</div>
-          <input type="password" />
+          <input type="password" v-model="password" />
         </div>
-        <div class="login-button">登录</div>
+        <div class="login-button" @click="login">登录</div>
       </div>
     </div>
     <div class="right"></div>
   </div>
 </template>
 <script>
+import { login } from "@/api/manage.js";
 export default {
   data() {
-    return {};
+    return {
+      userID: "",
+      password: ""
+    };
+  },
+  created() {
+    let userID = window.localStorage.getItem("userID");
+    let password = window.localStorage.getItem("password");
+    if(userID) {
+      this.userID = userID;
+      this.password = password;
+    }
+  },
+  methods: {
+    login() {
+      let vm = this;
+      login({
+        userID: vm.userID,
+        password: vm.password
+      }).then(resp => {
+        if(resp.data.success) {
+          vm.$Message.success("登录成功!");
+          window.localStorage.setItem("userID",vm.userID);
+          window.localStorage.setItem("password",vm.password);
+          vm.$router.push({
+            path:"/index",
+            query:{
+              enterpriseID:resp.data.data.enterprise.enterpriseID,
+              level:resp.data.data.enterprise.level
+            }
+          })
+        }else {
+          vm.$Message.error(resp.data.data);
+        }
+      });
+    }
   }
 };
 </script>
