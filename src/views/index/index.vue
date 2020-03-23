@@ -25,7 +25,6 @@
                 type="text"
                 v-model="formInline.school"
                 size="large"
-                @input="nameChange"
                 @on-focus="highlightText"
                 @on-blur="normalText"
                 id="school"
@@ -148,14 +147,6 @@
             <!-- <Button type="warning" size="large" class="btn-reset" @click="resetFunc">重置</Button> -->
           </FormItem>
         </Form>
-        <div class="search-list" v-if="isShowNameList">
-          <div
-            class="item"
-            v-for="(v,i) in searchList"
-            :key="i"
-            @click="choseItem(v)"
-          >{{v.EnterpriseName}}</div>
-        </div>
       </div>
       <div class="controls">
         <div class="data-handle">
@@ -168,7 +159,6 @@
         <Table
           :columns="columns"
           :data="list"
-          @on-selection-change="selectChange"
           :loading="loading"
         ></Table>
         <div class="page">
@@ -289,17 +279,10 @@ export default {
       schoolList: [],
       classList: [],
       allClass: [],
-      formImport: {
-        casenumber: "",
-        contactnumber: ""
-      },
       loading: false,
-      uploadUrl: getURL("UploadHandler.ashx"),
-      uploadUrlMJ: getURL("ImportCloseContact.ashx"),
       ids: [],
       ruleInline: {},
       h_school: false,
-      tab: "全部",
       columns: [
         {
           title: "序号",
@@ -383,11 +366,6 @@ export default {
       total: 0,
       modal: false,
       info: {},
-      chosedValue: {},
-      editValue: {},
-      searchList: [],
-      isShowNameList: false,
-      isWatchName: true
     };
   },
   components: {
@@ -395,15 +373,6 @@ export default {
   },
   created() {
     let vm = this;
-    // this.$watch(
-    //   "formInline.school",
-    //   debounce((newValue, oldValue) => {
-    //     if (!vm.isWatchName) {
-    //       return;
-    //     }
-    //     vm.searchName();
-    //   }, 500)
-    // );
     // 获取学校跟班级
     vm.getPermissionEnterprises();
   },
@@ -470,10 +439,6 @@ export default {
         return;
       this.h_school = false;
     },
-    changeTab(tab) {
-      this.tab = tab;
-      this.searchFunc();
-    },
     getList() {
       var vm = this;
       let params = {
@@ -502,74 +467,17 @@ export default {
       this.pageIndex = pageIndex;
       this.getList();
     },
-    searchName() {
-      let vm = this;
-      axios
-        .get(getURL("CommandHandler.ashx"), {
-          params: {
-            method: "GetEnterpriseName",
-            enterprisename: vm.formInline.school
-          }
-        })
-        .then(function(res) {
-          if (res.data.length > 0) {
-            vm.searchList = res.data;
-            vm.isShowNameList = true;
-          }
-          console.log(res);
-        });
-    },
-    choseItem(v) {
-      this.isWatchName = false;
-      this.formInline.school = v.EnterpriseName;
-      this.isShowNameList = false;
-    },
-    nameChange() {
-      this.isWatchName = true;
-    },
     searchFunc: function() {
       this.pageIndex = 1;
       this.getList();
     },
     showDetails(params) {
-      console.log(params);
       let vm = this;
       vm.info = params.row;
       vm.modal = true;
     },
-    importPerson() {
-      let vm = this;
-      if (!vm.formImport.casenumber || !vm.formImport.contactnumber) {
-        this.$Message.warning("请输入导入人数！");
-        return;
-      }
-      axios
-        .get(getURL("CommandHandler.ashx"), {
-          params: {
-            method: "saveCase",
-            casenumber: vm.formImport.casenumber,
-            contactnumber: vm.formImport.contactnumber
-          }
-        })
-        .then(res => {
-          if (res.data === "success") {
-            vm.$Message.success({
-              content: "上传成功！"
-            });
-          }
-        });
-    },
-    selectChange(selection) {
-      this.ids = [];
-      if (!selection.length) return;
-      for (var i = 0; i < selection.length; i++) {
-        this.ids.push(selection[i].ID);
-      }
-    },
     changeDate(date) {
       console.log(date);
-      // this.formInline.startDate = date[0];
-      // this.formInline.endDate = date[1];
     },
     exportData() {
       var vm = this;
@@ -636,47 +544,11 @@ export default {
         });
       }
     },
-    //导出症状检查详细信息
-    exportSymptom() {
-      axios
-        .get(getURL("CommandHandler.ashx"), {
-          params: {
-            method: "ExportZZJCData"
-          }
-        })
-        .then(res => {
-          window.location.href = getURL(res.data);
-        });
-    },
-    handleSuccess(res) {
-      this.$Message.success({
-        content: "上传成功！"
-      });
-    },
-    handleError() {
-      this.$Message.error({
-        content: "上传失败，请联系管理员！",
-        duration: 3
-      });
-    },
-    handleFormatError(res) {
-      this.$Message.error({
-        content: "格式错误，请上传.xls或者.xlsx文件！",
-        duration: 3
-      });
-    },
     resetFunc() {
       this.$refs["formInline"].resetFields();
     }
   },
-  watch: {
-    "formInline.school"() {
-      if (this.formInline.school === "") {
-        this.isWatchName = false;
-        this.isShowNameList = false;
-      }
-    }
-  }
+  watch: {}
 };
 </script>
 

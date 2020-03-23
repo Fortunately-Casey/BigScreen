@@ -1,7 +1,7 @@
 <template>
   <div class="bigscreen">
     <div class="top">
-      <p>南通开发区新冠肺炎疫情防控综合平台</p>
+      <p>南通开发区教育系统新冠肺炎疫情防控平台</p>
     </div>
     <div class="main">
       <div class="left-part">
