@@ -19,11 +19,6 @@ const routes = [
     component: resolve => require(["../views/bigscreen/bigscreen.vue"], resolve)
   },
   {
-    path: "/importStaff",
-    name:"importStaff",
-    component: resolve => require(["../views/importStaff/ImportStaff.vue"], resolve)
-  },
-  {
     path: "/manage",
     name:"manage",
     component: resolve => require(["../views/manage/Manage.vue"], resolve)

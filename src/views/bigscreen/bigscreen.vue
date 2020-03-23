@@ -52,7 +52,7 @@
       <div class="mid-part">
         <div class="mid-part-top">
           <div class="mid-tt">
-            <p>截止{{date}}开发区企业复工统计数据</p>
+            <p>截止{{date}}开发区教育系统复学统计数据</p>
             <span class="time">{{time}}</span>
           </div>
           <div class="mid-data">
