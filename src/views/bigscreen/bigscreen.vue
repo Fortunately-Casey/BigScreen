@@ -101,19 +101,19 @@
           <div class="sub-title col-bg mb15">
             <p>企业人员动态</p>
           </div>
-          <div class="col-chart" id="line-chart" ></div>
+          <div class="col-chart" id="line-chart"></div>
         </div>
         <div class="sub-mid">
           <div class="sub-title col-bg mb15">
             <p>隔离观察信息</p>
           </div>
-          <div class="col-chart" id="col-chart3" ></div>
+          <div class="col-chart" id="col-chart3"></div>
         </div>
         <div class="sub-mid">
           <div class="sub-title col-bg mb15">
             <p>隔离期人员统计</p>
           </div>
-          <div class="col-chart" id="col-chart4" ></div>
+          <div class="col-chart" id="col-chart4"></div>
         </div>
         <div class="right-foot">
           <div class="sub-title list-bg mb15">
@@ -705,7 +705,13 @@ export default {
               orient: "vertical",
               left: "right",
               top: "middle",
-              data: ["重点地区", "一般重点地区", "一般地区", "其他","国外人数"],
+              data: [
+                "重点地区",
+                "一般重点地区",
+                "一般地区",
+                "其他",
+                "国外人数"
+              ],
               textStyle: {
                 color: "#fff"
               },
@@ -723,7 +729,7 @@ export default {
                   { value: res.data[0].YBZDDQCount, name: "一般重点地区" },
                   { value: res.data[0].YBDQCount, name: "一般地区" },
                   { value: res.data[0].QTDQCount, name: "其他" },
-                  { value: res.data[0].WGCount, name: "国外人数" },
+                  { value: res.data[0].WGCount, name: "国外人数" }
                 ],
                 label: {
                   formatter: "{b}({c})",
@@ -880,10 +886,11 @@ export default {
           var myChart = echarts.init(document.getElementById("col-chart1"));
           var option = {
             legend: {
-              data: ["昨日累计", "今日新增", "异常数量"],
+              data: ["昨日累计", "今日新增", "异常数量", "今日申报"],
               textStyle: {
                 color: "#fff"
               },
+              padding: 5,
               itemWidth: 10,
               itemHeight: 2,
               left: "0"
@@ -891,6 +898,7 @@ export default {
             tooltip: {
               trigger: "axis",
               formatter: function(params) {
+                console.log(params);
                 if (params[0].name == "申报企业") {
                   return (
                     "申报企业" +
@@ -905,7 +913,7 @@ export default {
                     "：" +
                     params[1].value
                   );
-                } else {
+                } else if (params[0].name == "异常企业") {
                   return (
                     "异常企业" +
                     "<br/>" +
@@ -914,21 +922,33 @@ export default {
                     "：" +
                     params[2].value
                   );
+                } else {
+                  return (
+                    "今日企业申报数" +
+                    "<br/>" +
+                    params[3].marker +
+                    params[3].seriesName +
+                    "：" +
+                    params[3].value
+                  );
                 }
               }
             },
             grid: {
+              top: "30%",
               left: "3%",
               right: "10%",
-              bottom: "3%",
+              bottom: "-2%",
               containLabel: true
             },
-            color: ["#4D7FD8", "#4EBA90", "#D88C15"],
+            color: ["#4D7FD8", "#4EBA90", "#D88C15", "#3AE3AC"],
             xAxis: {
               type: "category",
-              data: ["申报企业", "异常企业"],
+              data: ["申报企业", "异常企业", "今日申报"],
               axisLabel: {
-                color: "#fff"
+                color: "#fff",
+                interval: 0,
+                rotate: 20
               },
               axisLine: {
                 show: false
@@ -977,14 +997,14 @@ export default {
                 type: "bar",
                 stack: "人数",
                 barWidth: 20,
-                data: [data.EnterpriseNumber, 0]
+                data: [data.EnterpriseNumber, 0, 0]
               },
               {
                 name: "今日新增",
                 type: "bar",
                 stack: "人数",
                 barWidth: 20,
-                data: [data.TodayAddEnterpriseNumber, 0]
+                data: [data.TodayAddEnterpriseNumber, 0, 0]
               },
               {
                 name: "异常数量",
@@ -992,7 +1012,19 @@ export default {
                 stack: "人数",
                 barWidth: 20,
                 yAxisIndex: 1,
-                data: [0, data.UnusualEnterpriseNumber]
+                data: [0, data.UnusualEnterpriseNumber, 0]
+              },
+              {
+                name: "今日申报",
+                type: "bar",
+                stack: "人数",
+                barWidth: 20,
+                yAxisIndex: 1,
+                data: [
+                  0,
+                  0,
+                  data.TodayEnterpriseNumber ? data.TodayEnterpriseNumber : 0
+                ]
               }
             ]
           };
@@ -1006,7 +1038,7 @@ export default {
       var myChart = echarts.init(document.getElementById("col-chart2"));
       var option = {
         legend: {
-          data: ["昨日累计", "今日新增", "异常数量"],
+          data: ["昨日累计", "今日新增", "异常数量", "今日申报"],
           textStyle: {
             color: "#fff"
           },
@@ -1031,7 +1063,7 @@ export default {
                 "：" +
                 params[1].value
               );
-            } else {
+            } else if (params[0].name == "异常人员") {
               return (
                 "异常人员" +
                 "<br/>" +
@@ -1040,22 +1072,33 @@ export default {
                 "：" +
                 params[2].value
               );
+            } else {
+              return (
+                "今日申报员工数" +
+                "<br/>" +
+                params[3].marker +
+                params[3].seriesName +
+                "：" +
+                params[3].value
+              );
             }
           }
         },
         grid: {
+          top: "30%",
           left: "3%",
           right: "10%",
-          bottom: "3%",
+          bottom: "-2%",
           containLabel: true
         },
-        color: ["#4D7FD8", "#4EBA90", "#D88C15"],
+        color: ["#4D7FD8", "#4EBA90", "#D88C15", "#3AE3AC"],
         xAxis: {
           type: "category",
-          data: ["申报人员", "异常人员"],
+          data: ["申报人员", "异常人员", "今日申报"],
           axisLabel: {
             color: "#fff",
-            interval: 0
+            interval: 0,
+            rotate: 20
           },
           axisLine: {
             show: false
@@ -1108,14 +1151,14 @@ export default {
             type: "bar",
             stack: "人数",
             barWidth: 20,
-            data: [data.EmployeeNumber, 0]
+            data: [data.EmployeeNumber, 0, 0]
           },
           {
             name: "今日新增",
             type: "bar",
             stack: "人数",
             barWidth: 20,
-            data: [data.TodayAddEmployeeNumber, 0]
+            data: [data.TodayAddEmployeeNumber, 0, 0]
           },
           {
             name: "异常数量",
@@ -1123,7 +1166,19 @@ export default {
             stack: "人数",
             barWidth: 20,
             yAxisIndex: 1,
-            data: [0, data.UnusualEmployeeNumber]
+            data: [0, data.UnusualEmployeeNumber, 0]
+          },
+          {
+            name: "今日申报",
+            type: "bar",
+            stack: "人数",
+            barWidth: 20,
+            yAxisIndex: 1,
+            data: [
+              0,
+              0,
+              data.TodayEmployeeNumber ? data.TodayEmployeeNumber : 0
+            ]
           }
         ]
       };
