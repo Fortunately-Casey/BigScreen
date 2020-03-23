@@ -1,8 +1,8 @@
 export function getURL(url) {
     let _result = '';
     if (process.env.NODE_ENV === 'development') {
-        // _result = `/api${url}`; // 开发环境会自动走代理
-        _result = `http://58.221.154.38:8099/${url}`; // 开发环境会自动走代理
+        _result = `/api${url}`; // 开发环境会自动走代理
+        // _result = `http://58.221.154.38:8099/${url}`; // 开发环境会自动走代理
     } else if (process.env.NODE_ENV === 'production') {
         _result = `https://yqfk.ntkfqjy.com:20000/api${url}`; // 正式环境地址
     }

@@ -425,7 +425,7 @@ export default {
     },
     classChange(item) {
       let chosedClass = this.classList.filter(v => v.enterpriseName === item);
-      this.formInline.enterpriseID = chosedClass.enterpriseID;
+      this.formInline.enterpriseID = chosedClass[0].enterpriseID;
     },
     highlightText() {
       this.h_school = true;
