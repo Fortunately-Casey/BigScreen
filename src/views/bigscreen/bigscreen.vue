@@ -1,32 +1,33 @@
 <template>
   <div class="bigscreen">
+    <Spin fix size="large" v-show="isShowLoading"></Spin>
     <div class="top">
       <p>南通开发区教育系统新冠肺炎疫情防控平台</p>
     </div>
     <div class="main">
       <div class="left-part">
-        <h3>企业防疫概况</h3>
+        <h3>学校防疫概况</h3>
         <div class="gk">
-          <h4>企业填报概况</h4>
+          <h4>学校填报概况</h4>
           <div class="btn">
-            <a href="javascript:void(0);" class="btn1">填报企业数（{{company.number}}）</a>
-            <a href="javascript:void(0);" class="btn2">填报人员数（{{company.peopleNumber}}）</a>
+            <a href="javascript:void(0);" class="btn1">填报班级数（{{classCount}}）</a>
+            <a href="javascript:void(0);" class="btn2">填报人员数（{{personCount}}）</a>
           </div>
         </div>
         <div class="gk">
-          <h4>防控措施（人数）</h4>
+          <h4>防控措施（容量）</h4>
           <div class="btn">
-            <a href="javascript:void(0);" class="btn3">集中隔离人数（{{monitor.IsolationPoint}}）</a>
-            <a href="javascript:void(0);" class="btn4">企业隔离人数（{{monitor.EnterprisePoint}}）</a>
+            <a href="javascript:void(0);" class="btn3">集中隔离人数（{{statistcsLast.concentrateCount}}）</a>
+            <a href="javascript:void(0);" class="btn4">居家隔离人数（{{statistcsLast.homeCount}}）</a>
           </div>
         </div>
         <div class="gk">
-          <h4>疫情监控</h4>
+          <h4>疫情监测</h4>
           <div class="btn">
-            <a href="javascript:void(0);" class="btn6">病例人数（{{monitor.PatientNumber}}）</a>
-            <a href="javascript:void(0);" class="btn8">定点医院（{{monitor.AdmittedHospital}}）</a>
-            <a href="javascript:void(0);" class="btn7">密接人数（{{monitor.CloseContactNumber}}）</a>
-            <a href="javascript:void(0);" class="btn5">发热门诊（{{monitor.FeverClinics}}）</a>
+            <a href="javascript:void(0);" class="btn6">病例人数（{{statistcsLast.PatientNumber}}）</a>
+            <a href="javascript:void(0);" class="btn8">定点医院（{{statistcsLast.designatedCount}}）</a>
+            <a href="javascript:void(0);" class="btn7">密接人数（{{statistcsLast.CloseContactNumber}}）</a>
+            <a href="javascript:void(0);" class="btn5">发热门诊（{{statistcsLast.feverCount}}）</a>
           </div>
         </div>
         <div class="sub-mid" style="flex: 1;display: flex;flex-direction: column;">
@@ -37,7 +38,7 @@
         </div>
         <div class="left-foot">
           <div class="sub-title col-bg mb15">
-            <p>企业填报动态</p>
+            <p>学校填报动态</p>
           </div>
           <div class="list-wrap">
             <div class="list-flex">
@@ -57,37 +58,60 @@
           </div>
           <div class="mid-data">
             <div class="mid-data-item">
-              <div class="mid-data-c1">较昨日 +{{stat.JZRQYFGS || 0}}</div>
-              <div class="mid-data-c2">{{stat.QYFGS || 0}}</div>
+              <div
+                class="mid-data-c1"
+              >较昨日 +{{(todayCount.teacherCount - yesterdayCount.teacherCount) || 0}}</div>
+              <div class="mid-data-c2">{{todayCount.teacherCount || 0}}</div>
               <div class="mid-data-c3">
-                复工企业数
+                填报教师
                 <br />
-                <!-- <span>复工率：{{stat.FGL || '0%'}}</span> -->
+                <!-- <span>复工率：{{todayCount.FGL || '0%'}}</span> -->
               </div>
             </div>
             <div class="mid-data-item">
-              <div class="mid-data-c1">较昨日 +{{stat.JZRFGRS || 0}}</div>
-              <div class="mid-data-c2">{{stat.FGRS || 0}}</div>
+              <div
+                class="mid-data-c1"
+              >较昨日 +{{(todayCount.studentCount - yesterdayCount.studentCount) || 0}}</div>
+              <div class="mid-data-c2">{{todayCount.studentCount || 0}}</div>
               <div class="mid-data-c3">
-                复工人数
+                填报学生
                 <br />
-                <!-- <span>在岗率：{{stat.ZGL || 0}}</span> -->
+                <!-- <span>在岗率：{{todayCount.ZGL || 0}}</span> -->
               </div>
             </div>
             <div class="mid-data-item">
-              <div class="mid-data-c1">较昨日 {{stat.JZRWFTRS || 0}}</div>
-              <div class="mid-data-c2">{{stat.WFTRS || 0}}</div>
-              <div class="mid-data-c3">未返通人数</div>
+              <div
+                class="mid-data-c1"
+              >较昨日 {{(todayCount.noReturnTeacherCount- yesterdayCount.noReturnTeacherCount) || 0}}</div>
+              <div class="mid-data-c2">{{todayCount.noReturnTeacherCount || 0}}</div>
+              <div class="mid-data-c3">未返通教师</div>
             </div>
             <div class="mid-data-item">
-              <div class="mid-data-c1">较昨日 +{{stat.JZRGLRS || 0}}</div>
-              <div class="mid-data-c2">{{stat.GLRS || 0}}</div>
-              <div class="mid-data-c3">隔离人数</div>
+              <div
+                class="mid-data-c1"
+              >较昨日 +{{(todayCount.noReturnStudentCount - yesterdayCount.noReturnStudentCount ) || 0}}</div>
+              <div class="mid-data-c2">{{todayCount.noReturnStudentCount || 0}}</div>
+              <div class="mid-data-c3">未反通学生</div>
             </div>
             <div class="mid-data-item">
-              <div class="mid-data-c1">较昨日 +{{stat.JZRYCZZRS || 0}}</div>
-              <div class="mid-data-c2" @click="showWarning">{{stat.YCZZRS || 0}}</div>
-              <div class="mid-data-c3">异常预警</div>
+              <div
+                class="mid-data-c1"
+              >较昨日 +{{(todayCount.dangerousTeacherCount - yesterdayCount.dangerousTeacherCount) || 0}}</div>
+              <div
+                class="mid-data-c2"
+                @click="showWarning"
+              >{{todayCount.dangerousTeacherCount || 0}}</div>
+              <div class="mid-data-c3">异常教师</div>
+            </div>
+            <div class="mid-data-item">
+              <div
+                class="mid-data-c1"
+              >较昨日 +{{(todayCount.dangerousStudentCount - yesterdayCount.dangerousStudentCount) || 0}}</div>
+              <div
+                class="mid-data-c2"
+                @click="showWarning"
+              >{{todayCount.dangerousStudentCount || 0}}</div>
+              <div class="mid-data-c3">异常学生</div>
             </div>
           </div>
         </div>
@@ -96,26 +120,26 @@
         </div>
       </div>
       <div class="right-part">
-        <h3>员工健康申报信息统计</h3>
+        <h3>人员防疫概况</h3>
         <div class="sub-mid">
           <div class="sub-title col-bg mb15">
-            <p>企业人员动态</p>
+            <p>学校人员动态</p>
           </div>
-          <div class="col-chart" id="line-chart" ></div>
+          <div class="col-chart" id="line-chart"></div>
         </div>
-        <div class="sub-mid">
+        <!-- <div class="sub-mid">
           <div class="sub-title col-bg mb15">
-            <p>隔离观察信息</p>
+            <p>街道人员信息</p>
           </div>
-          <div class="col-chart" id="col-chart3" ></div>
-        </div>
+          <div class="col-chart" id="col-chart3"></div>
+        </div> -->
         <div class="sub-mid">
           <div class="sub-title col-bg mb15">
-            <p>隔离期人员统计</p>
+            <p>街道人员信息</p>
           </div>
           <div class="col-chart" id="col-chart4" ></div>
         </div>
-        <div class="right-foot">
+        <div class="sub-mid">
           <div class="sub-title list-bg mb15">
             <p>症状监测</p>
           </div>
@@ -188,7 +212,7 @@
         <Table :columns="columns" :data="warningList" :height="500"></Table>
       </div>
     </Modal>
-    <div class="login">
+    <!-- <div class="login">
       <template v-if="!isLogin">
         <a href="javascript:void(0);" class="login-btn" @click="loginFormShow=true">请登录</a>
       </template>
@@ -231,14 +255,14 @@
           </Form>
         </div>
       </div>
-    </div>
+    </div>-->
   </div>
 </template>
 <script>
 import $ from "jquery";
 import axios from "axios";
 import { getURL } from "../../common/tool.js";
-
+import { getMonitorData } from "@/api/manage.js";
 import { setToken, getToken } from "../../libs/utils";
 import { loadModules, loadCss } from "esri-loader";
 
@@ -260,6 +284,7 @@ export default {
   name: "bigscreen",
   data() {
     return {
+      isShowLoading: false,
       map: null,
       frmzlyr: null,
       jzgldlyr: null,
@@ -388,10 +413,18 @@ export default {
         password: ""
       },
       isOpenSys: false,
-      warningList: []
+      warningList: [],
+
+      statistcsLast: {},
+      yesterdayCount: {},
+      todayCount: {},
+      classCount: 0,
+      personCount: 0
     };
   },
+  created() {},
   mounted: function() {
+    this.getMonitorData();
     var d = new Date();
     var year = d.getFullYear();
     var month = d.getMonth() + 1;
@@ -410,271 +443,289 @@ export default {
       vm.time = Hour + ":" + Min + ":" + sec;
     }, 1000);
     this.isLogin = getToken();
-    this.$nextTick(function() {
-      vm.init();
-    });
-    setInterval(() => {
-      this.$nextTick(function() {
-        vm.init();
-      });
-    }, 1000 * 60 * 10);
-    const options = {
-      // tell Dojo where to load other packages
-      dojoConfig: {
-        async: true,
-        packages: [
-          {
-            name: "custom",
-            location: "/custom"
-          }
-        ]
-      },
-      url: "http://223.113.1.77:8010/arcgis_js_api/library/3.19/3.19/init.js"
-    };
-    loadModules(
-      [
-        "esri/map",
-        "esri/layers/ArcGISTiledMapServiceLayer",
-        "esri/layers/ArcGISDynamicMapServiceLayer",
-        "esri/layers/FeatureLayer",
-        "esri/geometry/Extent",
-        "esri/renderers/HeatmapRenderer",
-        "esri/config",
-        "esri/symbols/PictureMarkerSymbol",
-        "esri/symbols/SimpleMarkerSymbol",
-        "esri/symbols/TextSymbol",
-        "esri/renderers/ClassBreaksRenderer",
-        "esri/symbols/SimpleFillSymbol",
-        "esri/symbols/SimpleLineSymbol",
-        "custom/ClusterLayer"
-      ],
-      options
-    )
-      .then(
-        ([
-          Map,
-          ArcGISTiledMapServiceLayer,
-          ArcGISDynamicMapServiceLayer,
-          FeatureLayer,
-          Extent,
-          HeatmapRenderer,
-          esriConfig,
-          PictureMarkerSymbol,
-          SimpleMarkerSymbol,
-          TextSymbol,
-          ClassBreaksRenderer,
-          SimpleFillSymbol,
-          SimpleLineSymbol,
-          ClusterLayer
-        ]) => {
-          var initialExtent = new Extent(
-            120.893798,
-            31.793207,
-            121.084289,
-            31.987909,
-            new esri.SpatialReference({ wkid: 4490 })
-          );
-          vm.map = new Map("map", {
-            extent: initialExtent,
-            logo: false,
-            slider: false
-          });
-          var dynamicLayer = new ArcGISDynamicMapServiceLayer(
-            "http://223.113.1.77:6080/arcgis/rest/services/NTJKZX/NTKFQMapService/MapServer"
-          );
-          vm.map.addLayer(dynamicLayer);
+    // this.$nextTick(function() {
+    //   vm.init();
+    // });
+    // setInterval(() => {
+    //   this.$nextTick(function() {
+    //     vm.init();
+    //   });
+    // }, 1000 * 60 * 10);
+    // const options = {
+    //   // tell Dojo where to load other packages
+    //   dojoConfig: {
+    //     async: true,
+    //     packages: [
+    //       {
+    //         name: "custom",
+    //         location: "/custom"
+    //       }
+    //     ]
+    //   },
+    //   url: "http://223.113.1.77:8010/arcgis_js_api/library/3.19/3.19/init.js"
+    // };
+    // loadModules(
+    //   [
+    //     "esri/map",
+    //     "esri/layers/ArcGISTiledMapServiceLayer",
+    //     "esri/layers/ArcGISDynamicMapServiceLayer",
+    //     "esri/layers/FeatureLayer",
+    //     "esri/geometry/Extent",
+    //     "esri/renderers/HeatmapRenderer",
+    //     "esri/config",
+    //     "esri/symbols/PictureMarkerSymbol",
+    //     "esri/symbols/SimpleMarkerSymbol",
+    //     "esri/symbols/TextSymbol",
+    //     "esri/renderers/ClassBreaksRenderer",
+    //     "esri/symbols/SimpleFillSymbol",
+    //     "esri/symbols/SimpleLineSymbol",
+    //     "custom/ClusterLayer"
+    //   ],
+    //   options
+    // )
+    //   .then(
+    //     ([
+    //       Map,
+    //       ArcGISTiledMapServiceLayer,
+    //       ArcGISDynamicMapServiceLayer,
+    //       FeatureLayer,
+    //       Extent,
+    //       HeatmapRenderer,
+    //       esriConfig,
+    //       PictureMarkerSymbol,
+    //       SimpleMarkerSymbol,
+    //       TextSymbol,
+    //       ClassBreaksRenderer,
+    //       SimpleFillSymbol,
+    //       SimpleLineSymbol,
+    //       ClusterLayer
+    //     ]) => {
+    //       var initialExtent = new Extent(
+    //         120.893798,
+    //         31.793207,
+    //         121.084289,
+    //         31.987909,
+    //         new esri.SpatialReference({ wkid: 4490 })
+    //       );
+    //       vm.map = new Map("map", {
+    //         extent: initialExtent,
+    //         logo: false,
+    //         slider: false
+    //       });
+    //       var dynamicLayer = new ArcGISDynamicMapServiceLayer(
+    //         "http://223.113.1.77:6080/arcgis/rest/services/NTJKZX/NTKFQMapService/MapServer"
+    //       );
+    //       vm.map.addLayer(dynamicLayer);
 
-          var frmzSymbol = new PictureMarkerSymbol(icon5, 12, 22);
-          var jzgldSymbol = new PictureMarkerSymbol(icon3, 24, 16);
-          var qzrySymbol = new PictureMarkerSymbol(icon6, 20, 22);
-          var ycqySymbol = new PictureMarkerSymbol(icon11, 23, 20);
+    //       var frmzSymbol = new PictureMarkerSymbol(icon5, 12, 22);
+    //       var jzgldSymbol = new PictureMarkerSymbol(icon3, 24, 16);
+    //       var qzrySymbol = new PictureMarkerSymbol(icon6, 20, 22);
+    //       var ycqySymbol = new PictureMarkerSymbol(icon11, 23, 20);
 
-          //发热门诊
-          if (vm.frmzlyr == null) {
-            var layerDefinition = {
-              geometryType: "esriGeometryPoint",
-              fields: [
-                {
-                  name: "Name",
-                  type: "esriFieldTypeString",
-                  alias: "名称"
-                },
-                {
-                  name: "Address",
-                  type: "esriFieldTypeString",
-                  alias: "地址"
-                }
-              ]
-            };
-            var featureCollection = {
-              layerDefinition: layerDefinition,
-              featureSet: null
-            };
-            var infoTemplate = new esri.InfoTemplate();
-            infoTemplate.setTitle("${Name}");
-            infoTemplate.setContent("${Address}<br/>");
-            //创建发热门诊图层
-            vm.frmzlyr = new FeatureLayer(featureCollection, {
-              infoTemplate: infoTemplate,
-              outFields: ["*"],
-              opacity: 1
-            });
-            vm.map.addLayer(vm.frmzlyr);
+    //       //发热门诊
+    //       if (vm.frmzlyr == null) {
+    //         var layerDefinition = {
+    //           geometryType: "esriGeometryPoint",
+    //           fields: [
+    //             {
+    //               name: "Name",
+    //               type: "esriFieldTypeString",
+    //               alias: "名称"
+    //             },
+    //             {
+    //               name: "Address",
+    //               type: "esriFieldTypeString",
+    //               alias: "地址"
+    //             }
+    //           ]
+    //         };
+    //         var featureCollection = {
+    //           layerDefinition: layerDefinition,
+    //           featureSet: null
+    //         };
+    //         var infoTemplate = new esri.InfoTemplate();
+    //         infoTemplate.setTitle("${Name}");
+    //         infoTemplate.setContent("${Address}<br/>");
+    //         //创建发热门诊图层
+    //         vm.frmzlyr = new FeatureLayer(featureCollection, {
+    //           infoTemplate: infoTemplate,
+    //           outFields: ["*"],
+    //           opacity: 1
+    //         });
+    //         vm.map.addLayer(vm.frmzlyr);
 
-            axios
-              .get(getURL("CommandHandler.ashx"), {
-                params: {
-                  method: "GetOpenZoneFeverClinics"
-                }
-              })
-              .then(function(res) {
-                for (var i = 0; i < res.data.length; i++) {
-                  var info = {};
-                  var x = Number(res.data[i].XZB);
-                  var y = Number(res.data[i].YZB);
-                  var point = new esri.geometry.Point(
-                    x,
-                    y,
-                    new esri.SpatialReference({ wkid: 4490 })
-                  ); //初始化起点
-                  var graphic = new esri.Graphic(point);
-                  graphic.setAttributes({
-                    Name: res.data[i].Name,
-                    Address: res.data[i].Address
-                  });
-                  graphic.setSymbol(frmzSymbol);
-                  vm.frmzlyr.add(graphic);
-                }
-              });
-          }
+    //         axios
+    //           .get(getURL("CommandHandler.ashx"), {
+    //             params: {
+    //               method: "GetOpenZoneFeverClinics"
+    //             }
+    //           })
+    //           .then(function(res) {
+    //             for (var i = 0; i < res.data.length; i++) {
+    //               var info = {};
+    //               var x = Number(res.data[i].XZB);
+    //               var y = Number(res.data[i].YZB);
+    //               var point = new esri.geometry.Point(
+    //                 x,
+    //                 y,
+    //                 new esri.SpatialReference({ wkid: 4490 })
+    //               ); //初始化起点
+    //               var graphic = new esri.Graphic(point);
+    //               graphic.setAttributes({
+    //                 Name: res.data[i].Name,
+    //                 Address: res.data[i].Address
+    //               });
+    //               graphic.setSymbol(frmzSymbol);
+    //               vm.frmzlyr.add(graphic);
+    //             }
+    //           });
+    //       }
 
-          //集中隔离点
-          if (vm.jzgldlyr == null) {
-            var layerDefinition = {
-              geometryType: "esriGeometryPoint",
-              fields: [
-                {
-                  name: "Name",
-                  type: "esriFieldTypeString",
-                  alias: "名称"
-                },
-                {
-                  name: "Address",
-                  type: "esriFieldTypeString",
-                  alias: "地址"
-                }
-              ]
-            };
-            var featureCollection = {
-              layerDefinition: layerDefinition,
-              featureSet: null
-            };
-            var infoTemplate = new esri.InfoTemplate();
-            infoTemplate.setTitle("${Name}");
-            infoTemplate.setContent("${Address}<br/>");
-            //创建集中隔离点图层
-            vm.jzgldlyr = new FeatureLayer(featureCollection, {
-              mode: FeatureLayer.MODE_SNAPSHOT,
-              infoTemplate: infoTemplate,
-              outFields: ["*"],
-              opacity: 1
-            });
-            vm.map.addLayer(vm.jzgldlyr);
+    //       //集中隔离点
+    //       if (vm.jzgldlyr == null) {
+    //         var layerDefinition = {
+    //           geometryType: "esriGeometryPoint",
+    //           fields: [
+    //             {
+    //               name: "Name",
+    //               type: "esriFieldTypeString",
+    //               alias: "名称"
+    //             },
+    //             {
+    //               name: "Address",
+    //               type: "esriFieldTypeString",
+    //               alias: "地址"
+    //             }
+    //           ]
+    //         };
+    //         var featureCollection = {
+    //           layerDefinition: layerDefinition,
+    //           featureSet: null
+    //         };
+    //         var infoTemplate = new esri.InfoTemplate();
+    //         infoTemplate.setTitle("${Name}");
+    //         infoTemplate.setContent("${Address}<br/>");
+    //         //创建集中隔离点图层
+    //         vm.jzgldlyr = new FeatureLayer(featureCollection, {
+    //           mode: FeatureLayer.MODE_SNAPSHOT,
+    //           infoTemplate: infoTemplate,
+    //           outFields: ["*"],
+    //           opacity: 1
+    //         });
+    //         vm.map.addLayer(vm.jzgldlyr);
 
-            axios
-              .get(getURL("CommandHandler.ashx"), {
-                params: {
-                  method: "GetOpenZoneIsolationPoint"
-                }
-              })
-              .then(function(res) {
-                for (var i = 0; i < res.data.length; i++) {
-                  var info = {};
-                  var x = Number(res.data[i].XZB);
-                  var y = Number(res.data[i].YZB);
-                  var point = new esri.geometry.Point(
-                    x,
-                    y,
-                    new esri.SpatialReference({ wkid: 4490 })
-                  ); //初始化起点
-                  var graphic = new esri.Graphic(point);
-                  graphic.setAttributes({
-                    Name: res.data[i].Name,
-                    Address: res.data[i].Address
-                  });
-                  graphic.setSymbol(jzgldSymbol);
-                  vm.jzgldlyr.add(graphic);
-                }
-              });
-          }
+    //         axios
+    //           .get(getURL("CommandHandler.ashx"), {
+    //             params: {
+    //               method: "GetOpenZoneIsolationPoint"
+    //             }
+    //           })
+    //           .then(function(res) {
+    //             for (var i = 0; i < res.data.length; i++) {
+    //               var info = {};
+    //               var x = Number(res.data[i].XZB);
+    //               var y = Number(res.data[i].YZB);
+    //               var point = new esri.geometry.Point(
+    //                 x,
+    //                 y,
+    //                 new esri.SpatialReference({ wkid: 4490 })
+    //               ); //初始化起点
+    //               var graphic = new esri.Graphic(point);
+    //               graphic.setAttributes({
+    //                 Name: res.data[i].Name,
+    //                 Address: res.data[i].Address
+    //               });
+    //               graphic.setSymbol(jzgldSymbol);
+    //               vm.jzgldlyr.add(graphic);
+    //             }
+    //           });
+    //       }
 
-          //异常企业
-          if (vm.ycqylyr == null) {
-            var layerDefinition = {
-              geometryType: "esriGeometryPoint",
-              fields: [
-                {
-                  name: "EnterpriseName",
-                  type: "esriFieldTypeString",
-                  alias: "名称"
-                },
-                {
-                  name: "Address",
-                  type: "esriFieldTypeString",
-                  alias: "地址"
-                }
-              ]
-            };
-            var featureCollection = {
-              layerDefinition: layerDefinition,
-              featureSet: null
-            };
-            var infoTemplate = new esri.InfoTemplate();
-            infoTemplate.setTitle("${EnterpriseName}");
-            infoTemplate.setContent("${Address}<br/>");
-            //创建集中隔离点图层
-            vm.ycqylyr = new FeatureLayer(featureCollection, {
-              mode: FeatureLayer.MODE_SNAPSHOT,
-              infoTemplate: infoTemplate,
-              outFields: ["*"],
-              opacity: 1
-            });
-            vm.map.addLayer(vm.ycqylyr);
+    //       //异常企业
+    //       if (vm.ycqylyr == null) {
+    //         var layerDefinition = {
+    //           geometryType: "esriGeometryPoint",
+    //           fields: [
+    //             {
+    //               name: "EnterpriseName",
+    //               type: "esriFieldTypeString",
+    //               alias: "名称"
+    //             },
+    //             {
+    //               name: "Address",
+    //               type: "esriFieldTypeString",
+    //               alias: "地址"
+    //             }
+    //           ]
+    //         };
+    //         var featureCollection = {
+    //           layerDefinition: layerDefinition,
+    //           featureSet: null
+    //         };
+    //         var infoTemplate = new esri.InfoTemplate();
+    //         infoTemplate.setTitle("${EnterpriseName}");
+    //         infoTemplate.setContent("${Address}<br/>");
+    //         //创建集中隔离点图层
+    //         vm.ycqylyr = new FeatureLayer(featureCollection, {
+    //           mode: FeatureLayer.MODE_SNAPSHOT,
+    //           infoTemplate: infoTemplate,
+    //           outFields: ["*"],
+    //           opacity: 1
+    //         });
+    //         vm.map.addLayer(vm.ycqylyr);
 
-            axios
-              .get(getURL("CommandHandler.ashx"), {
-                params: {
-                  method: "GetUnusualEnterprise"
-                }
-              })
-              .then(function(res) {
-                for (var i = 0; i < res.data.length; i++) {
-                  var info = {};
-                  var x = Number(res.data[i].BDX);
-                  var y = Number(res.data[i].BDY);
-                  var point = new esri.geometry.Point(
-                    x,
-                    y,
-                    new esri.SpatialReference({ wkid: 4490 })
-                  ); //初始化起点
-                  var graphic = new esri.Graphic(point);
-                  graphic.setAttributes({
-                    EnterpriseName: res.data[i].EnterpriseName,
-                    Address: res.data[i].Address
-                  });
-                  graphic.setSymbol(ycqySymbol);
-                  vm.ycqylyr.add(graphic);
-                }
-              });
-          }
-        }
-      )
-      .catch(err => {
-        // handle any errors
-        console.error(err);
-      });
+    //         axios
+    //           .get(getURL("CommandHandler.ashx"), {
+    //             params: {
+    //               method: "GetUnusualEnterprise"
+    //             }
+    //           })
+    //           .then(function(res) {
+    //             for (var i = 0; i < res.data.length; i++) {
+    //               var info = {};
+    //               var x = Number(res.data[i].BDX);
+    //               var y = Number(res.data[i].BDY);
+    //               var point = new esri.geometry.Point(
+    //                 x,
+    //                 y,
+    //                 new esri.SpatialReference({ wkid: 4490 })
+    //               ); //初始化起点
+    //               var graphic = new esri.Graphic(point);
+    //               graphic.setAttributes({
+    //                 EnterpriseName: res.data[i].EnterpriseName,
+    //                 Address: res.data[i].Address
+    //               });
+    //               graphic.setSymbol(ycqySymbol);
+    //               vm.ycqylyr.add(graphic);
+    //             }
+    //           });
+    //       }
+    //     }
+    //   )
+    //   .catch(err => {
+    //     // handle any errors
+    //     console.error(err);
+    //   });
   },
   methods: {
+    getMonitorData() {
+      let vm = this;
+      vm.isShowLoading = true;
+      getMonitorData().then(resp => {
+        vm.isShowLoading = false;
+        console.log(resp.data.data);
+        let res = resp.data.data;
+        vm.statistcsLast = res.statistcsLast;
+        vm.yesterdayCount = res.yesterdayCount;
+        vm.todayCount = res.todayCount;
+        vm.classCount = res.yesterdayClassCount + res.todayAddClassCount;
+        vm.personCount = res.yesterdayPersonCount + res.todayAddPersonCount;
+        vm.createLineChart(res.staffDynamicsList);
+        vm.createPieChart(vm.statistcsLast);
+        vm.createColumnChart1(res);
+        vm.createColumnChart2(res);
+      });
+    },
     init: function() {
       this.getLeftTopData1();
       this.getLeftTopData2();
@@ -686,327 +737,316 @@ export default {
       // this.createLineChart();
       this.getCWInfo();
     },
-    createPieChart: function() {
-      axios
-        .get(getURL("CommandHandler.ashx"), {
-          params: {
-            method: "GetResumerData"
-          }
-        })
-        .then(function(res) {
-          var myChart = echarts.init(document.getElementById("pie-chart"));
-          var option = {
-            tooltip: {
-              trigger: "item",
-              formatter: "{b} : {c} ({d}%)"
-            },
-            color: ["#DA3031", "#D7610D", "#CDCC3C", "#55D16E"],
-            legend: {
-              orient: "vertical",
-              left: "right",
-              top: "middle",
-              data: ["重点地区", "一般重点地区", "一般地区", "其他","国外人数"],
-              textStyle: {
-                color: "#fff"
-              },
-              itemWidth: 10,
-              itemHeight: 2
-            },
-            series: [
-              {
-                name: "复工人员分类",
-                type: "pie",
-                radius: ["30%", "70%"],
-                center: ["40%", "50%"],
-                data: [
-                  { value: res.data[0].ZDDQCount, name: "重点地区" },
-                  { value: res.data[0].YBZDDQCount, name: "一般重点地区" },
-                  { value: res.data[0].YBDQCount, name: "一般地区" },
-                  { value: res.data[0].QTDQCount, name: "其他" },
-                  { value: res.data[0].WGCount, name: "国外人数" },
-                ],
-                label: {
-                  formatter: "{b}({c})",
-                  fontSize: 12,
-                  color: "#fff"
-                },
-                labelLine: {
-                  lineStyle: {
-                    color: "#fff"
-                  }
-                },
-                emphasis: {
-                  itemStyle: {
-                    shadowBlur: 10,
-                    shadowOffsetX: 0,
-                    shadowColor: "rgba(0, 0, 0, 0.5)"
-                  }
-                }
-              }
-            ]
-          };
-          // 使用刚指定的配置项和数据显示图表。
-          myChart.setOption(option);
-        });
-    },
-    createLineChart: function() {
-      axios
-        .get(getURL("CommandHandler.ashx"), {
-          params: {
-            method: "GetEnterpriseTrends"
-          }
-        })
-        .then(function(res) {
-          var data = res.data;
-          var xaxis = [],
-            ys = [],
-            bl = [],
-            wft = [],
-            yfg = [],
-            zgl = [];
-          var tempDate = "";
-          for (var i = 0; i < data.length; i++) {
-            if (tempDate != data[i].Date) {
-              xaxis.push(data[i].Date);
-              tempDate = data[i].Date;
-            }
-            if (data[i].Type == "疑似") {
-              ys.push(data[i].Number);
-            }
-            if (data[i].Type == "病例") {
-              bl.push(data[i].Number);
-            }
-            if (data[i].Type == "未返通") {
-              wft.push(data[i].Number);
-            }
-            if (data[i].Type == "已复工") {
-              yfg.push(data[i].Number);
-            }
-            if (data[i].Type == "在隔离") {
-              zgl.push(data[i].Number);
-            }
-          }
-          var myChart = echarts.init(document.getElementById("line-chart"));
-          var option = {
-            legend: {
-              data: ["留观", "就诊", "未返通", "已复工", "在隔离"],
-              textStyle: {
-                color: "#fff"
-              },
-              right: "50"
-            },
-            tooltip: {
-              trigger: "axis"
-            },
-            grid: {
-              top: "30",
-              left: "3%",
-              right: "50",
-              bottom: "3%",
-              containLabel: true
-            },
-            color: ["#DE3AE3", "#E33A39", "#D5E223", "#3AE3AC", "#5C91FB"],
-            xAxis: {
-              type: "category",
-              data: xaxis,
-              axisLabel: {
-                color: "#fff"
-              },
-              axisLine: {
-                show: false
-              },
-              axisTick: {
-                show: false
-              }
-            },
-            yAxis: {
-              type: "value",
-              name: "人数",
-              nameTextStyle: {
-                color: "#fff"
-              },
-              axisLabel: {
-                color: "#fff"
-              },
-              axisLine: {
-                show: false
-              },
-              axisTick: {
-                show: false
-              }
-            },
-            series: [
-              {
-                name: "留观",
-                type: "line",
-                data: ys
-              },
-              {
-                name: "就诊",
-                type: "line",
-                data: bl
-              },
-              {
-                name: "未返通",
-                type: "line",
-                data: wft
-              },
-              {
-                name: "已复工",
-                type: "line",
-                data: yfg
-              },
-              {
-                name: "在隔离",
-                type: "line",
-                data: zgl
-              }
-            ]
-          };
-          // 使用刚指定的配置项和数据显示图表。
-          myChart.setOption(option);
-        });
-    },
-    createColumnChart1: function() {
-      var vm = this;
-      axios
-        .get(getURL("CommandHandler.ashx"), {
-          params: {
-            method: "GetReportData"
-          }
-        })
-        .then(function(res) {
-          var data = res.data[0];
-          var myChart = echarts.init(document.getElementById("col-chart1"));
-          var option = {
-            legend: {
-              data: ["昨日累计", "今日新增", "异常数量"],
-              textStyle: {
-                color: "#fff"
-              },
-              itemWidth: 10,
-              itemHeight: 2,
-              left: "0"
-            },
-            tooltip: {
-              trigger: "axis",
-              formatter: function(params) {
-                if (params[0].name == "申报企业") {
-                  return (
-                    "申报企业" +
-                    "<br/>" +
-                    params[0].marker +
-                    params[0].seriesName +
-                    "：" +
-                    params[0].value +
-                    "<br/>" +
-                    params[1].marker +
-                    params[1].seriesName +
-                    "：" +
-                    params[1].value
-                  );
-                } else {
-                  return (
-                    "异常企业" +
-                    "<br/>" +
-                    params[2].marker +
-                    params[2].seriesName +
-                    "：" +
-                    params[2].value
-                  );
-                }
-              }
-            },
-            grid: {
-              left: "3%",
-              right: "10%",
-              bottom: "3%",
-              containLabel: true
-            },
-            color: ["#4D7FD8", "#4EBA90", "#D88C15"],
-            xAxis: {
-              type: "category",
-              data: ["申报企业", "异常企业"],
-              axisLabel: {
-                color: "#fff"
-              },
-              axisLine: {
-                show: false
-              },
-              axisTick: {
-                show: false
-              }
-            },
-            yAxis: [
-              {
-                type: "value",
-                name: "申报数量",
-                nameTextStyle: {
-                  color: "#fff"
-                },
-                axisLabel: {
-                  color: "#fff"
-                },
-                axisLine: {
-                  show: false
-                },
-                axisTick: {
-                  show: false
-                }
-              },
-              {
-                type: "value",
-                name: "异常数量",
-                nameTextStyle: {
-                  color: "#fff"
-                },
-                axisLabel: {
-                  color: "#fff"
-                },
-                axisLine: {
-                  show: false
-                },
-                axisTick: {
-                  show: false
-                }
-              }
+    createPieChart: function(res) {
+      var myChart = echarts.init(document.getElementById("pie-chart"));
+      var option = {
+        tooltip: {
+          trigger: "item",
+          formatter: "{b} : {c} ({d}%)"
+        },
+        color: ["#DA3031", "#D7610D", "#CDCC3C", "#55D16E"],
+        legend: {
+          orient: "vertical",
+          left: "right",
+          top: "middle",
+          data: ["重点地区", "一般重点地区", "一般地区", "其他", "国外人数"],
+          textStyle: {
+            color: "#fff"
+          },
+          itemWidth: 10,
+          itemHeight: 2
+        },
+        series: [
+          {
+            name: "复工人员分类",
+            type: "pie",
+            radius: ["30%", "70%"],
+            center: ["40%", "50%"],
+            data: [
+              { value: res.keyAreaCount, name: "重点地区" },
+              { value: res.normalKeyAreaCount, name: "一般重点地区" },
+              { value: res.normalAreaCount, name: "一般地区" },
+              { value: res.otherAreaCount, name: "其他" },
+              { value: res.overSeaCount, name: "国外人数" }
             ],
-            series: [
-              {
-                name: "昨日累计",
-                type: "bar",
-                stack: "人数",
-                barWidth: 20,
-                data: [data.EnterpriseNumber, 0]
-              },
-              {
-                name: "今日新增",
-                type: "bar",
-                stack: "人数",
-                barWidth: 20,
-                data: [data.TodayAddEnterpriseNumber, 0]
-              },
-              {
-                name: "异常数量",
-                type: "bar",
-                stack: "人数",
-                barWidth: 20,
-                yAxisIndex: 1,
-                data: [0, data.UnusualEnterpriseNumber]
+            label: {
+              formatter: "{b}({c})",
+              fontSize: 12,
+              color: "#fff"
+            },
+            labelLine: {
+              lineStyle: {
+                color: "#fff"
               }
-            ]
-          };
-          // 使用刚指定的配置项和数据显示图表。
-          myChart.setOption(option);
-          vm.createColumnChart2(data);
-        });
+            },
+            emphasis: {
+              itemStyle: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: "rgba(0, 0, 0, 0.5)"
+              }
+            }
+          }
+        ]
+      };
+      // 使用刚指定的配置项和数据显示图表。
+      myChart.setOption(option);
     },
-    createColumnChart2: function(data) {
-      var vm = this;
-      var myChart = echarts.init(document.getElementById("col-chart2"));
+    createLineChart: function(data) {
+      var xaxis = [],
+        lg = [], //留观
+        jz = [], //就诊
+        wft = [], //未返通
+        zgl = []; //在隔离
+      var tempDate = "";
+      for (var i = 0; i < data.length; i++) {
+        if (tempDate != data[i].date) {
+          xaxis.push(data[i].date);
+          tempDate = data[i].date;
+        }
+        lg.push(data[i].feverCount);
+        jz.push(data[i].designatedCount);
+        wft.push(data[i].noReturnCount);
+        zgl.push(data[i].isolationCount);
+      }
+      var myChart = echarts.init(document.getElementById("line-chart"));
       var option = {
         legend: {
-          data: ["昨日累计", "今日新增", "异常数量"],
+          data: ["留观", "就诊", "未返通", "在隔离"],
+          textStyle: {
+            color: "#fff"
+          },
+          right: "50"
+        },
+        tooltip: {
+          trigger: "axis"
+        },
+        grid: {
+          top: "30",
+          left: "3%",
+          right: "50",
+          bottom: "3%",
+          containLabel: true
+        },
+        color: ["#DE3AE3", "#E33A39", "#D5E223", "#5C91FB"],
+        xAxis: {
+          type: "category",
+          data: xaxis,
+          axisLabel: {
+            color: "#fff"
+          },
+          axisLine: {
+            show: false
+          },
+          axisTick: {
+            show: false
+          }
+        },
+        yAxis: {
+          type: "value",
+          name: "人数",
+          nameTextStyle: {
+            color: "#fff"
+          },
+          axisLabel: {
+            color: "#fff"
+          },
+          axisLine: {
+            show: false
+          },
+          axisTick: {
+            show: false
+          }
+        },
+        series: [
+          {
+            name: "留观",
+            type: "line",
+            data: lg
+          },
+          {
+            name: "就诊",
+            type: "line",
+            data: jz
+          },
+          {
+            name: "未返通",
+            type: "line",
+            data: wft
+          },
+          {
+            name: "在隔离",
+            type: "line",
+            data: zgl
+          }
+        ]
+      };
+      // 使用刚指定的配置项和数据显示图表。
+      myChart.setOption(option);
+    },
+    createColumnChart1: function(res) {
+      var data = res;
+      var myChart = echarts.init(document.getElementById("col-chart1"));
+      var option = {
+        legend: {
+          data: ["昨日累计", "今日新增", "今日申报", "异常数量"],
+          textStyle: {
+            color: "#fff"
+          },
+          itemWidth: 10,
+          itemHeight: 2,
+          left: "0"
+        },
+        tooltip: {
+          trigger: "axis",
+          formatter: function(params) {
+            if (params[0].name == "申报班级") {
+              return (
+                "申报班级" +
+                "<br/>" +
+                params[0].marker +
+                params[0].seriesName +
+                "：" +
+                params[0].value +
+                "<br/>" +
+                params[1].marker +
+                params[1].seriesName +
+                "：" +
+                params[1].value
+              );
+            } else if (params[0].name == "今日申报") {
+              return (
+                "今日申报" +
+                "<br/>" +
+                params[2].marker +
+                params[2].seriesName +
+                "：" +
+                params[2].value
+              );
+            } else {
+              return (
+                "异常班级" +
+                "<br/>" +
+                params[3].marker +
+                params[3].seriesName +
+                "：" +
+                params[3].value
+              );
+            }
+          }
+        },
+        grid: {
+          top: "30%",
+          left: "3%",
+          right: "10%",
+          bottom: "-2%",
+          containLabel: true
+        },
+        color: ["#4D7FD8", "#4EBA90", "#3AE3AC", "#D88C15"],
+        xAxis: {
+          type: "category",
+          data: ["申报班级", "今日申报", "异常班级"],
+          axisLabel: {
+            color: "#fff",
+            rotate: 20
+          },
+          axisLine: {
+            show: false
+          },
+          axisTick: {
+            show: false
+          }
+        },
+        yAxis: [
+          {
+            type: "value",
+            name: "申报数量",
+            nameTextStyle: {
+              color: "#fff"
+            },
+            axisLabel: {
+              color: "#fff"
+            },
+            axisLine: {
+              show: false
+            },
+            axisTick: {
+              show: false
+            }
+          },
+          {
+            type: "value",
+            name: "异常数量",
+            nameTextStyle: {
+              color: "#fff"
+            },
+            axisLabel: {
+              color: "#fff"
+            },
+            axisLine: {
+              show: false
+            },
+            axisTick: {
+              show: false
+            }
+          }
+        ],
+        series: [
+          {
+            name: "昨日累计",
+            type: "bar",
+            stack: "人数",
+            barWidth: 20,
+            data: [data.yesterdayClassCount, 0, 0]
+          },
+          {
+            name: "今日新增",
+            type: "bar",
+            stack: "人数",
+            barWidth: 20,
+            data: [data.todayAddClassCount, 0, 0]
+          },
+          {
+            name: "今日申报",
+            type: "bar",
+            stack: "人数",
+            barWidth: 20,
+            data: [0, data.todayClassCount, 0]
+          },
+          {
+            name: "异常数量",
+            type: "bar",
+            stack: "人数",
+            barWidth: 20,
+            yAxisIndex: 1,
+            data: [0, 0, data.todayDangerousClassCount]
+          }
+        ]
+      };
+      // 使用刚指定的配置项和数据显示图表。
+      myChart.setOption(option);
+    },
+    createColumnChart2: function(res) {
+      var data = res;
+      var myChart = echarts.init(document.getElementById("col-chart2"));
+      var maxCount, maxError;
+      var num =
+        parseInt((data.yesterdayPersonCount + data.todayAddPersonCount) / 100) *
+        100;
+      var error = parseInt(data.todayDangerousPersonCount / 100) * 100;
+      if (num <= 0) {
+        maxCount = 100;
+      } else {
+        maxCount = num * 1.5;
+      }
+      if (error <= 0) {
+        maxError = 100;
+      } else {
+        maxError = error * 1.5;
+      }
+      var option = {
+        legend: {
+          data: ["昨日累计", "今日新增", "异常数量", "今日申报"],
           textStyle: {
             color: "#fff"
           },
@@ -1031,31 +1071,42 @@ export default {
                 "：" +
                 params[1].value
               );
-            } else {
+            } else if (params[0].name == "今日申报") {
               return (
-                "异常人员" +
+                "今日申报" +
                 "<br/>" +
                 params[2].marker +
                 params[2].seriesName +
                 "：" +
                 params[2].value
               );
+            } else {
+              return (
+                "异常人员" +
+                "<br/>" +
+                params[3].marker +
+                params[3].seriesName +
+                "：" +
+                params[3].value
+              );
             }
           }
         },
         grid: {
+          top: "30%",
           left: "3%",
           right: "10%",
-          bottom: "3%",
+          bottom: "-2%",
           containLabel: true
         },
-        color: ["#4D7FD8", "#4EBA90", "#D88C15"],
+        color: ["#4D7FD8", "#4EBA90", "#3AE3AC", "#D88C15"],
         xAxis: {
           type: "category",
-          data: ["申报人员", "异常人员"],
+          data: ["申报人员", "今日申报", "异常人员"],
           axisLabel: {
             color: "#fff",
-            interval: 0
+            interval: 0,
+            rotate: 20
           },
           axisLine: {
             show: false
@@ -1071,8 +1122,8 @@ export default {
             nameTextStyle: {
               color: "#fff"
             },
-            max: 40000, // 计算最大值
-            interval: Math.ceil(40000 / 5),
+            max: maxCount, // 计算最大值
+            interval: Math.ceil(maxCount / 5),
             axisLabel: {
               color: "#fff"
             },
@@ -1095,8 +1146,8 @@ export default {
             axisLine: {
               show: false
             },
-            max: 500, // 计算最大值
-            interval: Math.ceil(500 / 5),
+            max: maxError, // 计算最大值
+            interval: Math.ceil(maxError / 5),
             axisTick: {
               show: false
             }
@@ -1108,14 +1159,21 @@ export default {
             type: "bar",
             stack: "人数",
             barWidth: 20,
-            data: [data.EmployeeNumber, 0]
+            data: [data.yesterdayPersonCount, 0, 0]
           },
           {
             name: "今日新增",
             type: "bar",
             stack: "人数",
             barWidth: 20,
-            data: [data.TodayAddEmployeeNumber, 0]
+            data: [data.todayAddPersonCount, 0, 0]
+          },
+          {
+            name: "今日申报",
+            type: "bar",
+            stack: "人数",
+            barWidth: 20,
+            data: [0, data.todayPersonCount, 0]
           },
           {
             name: "异常数量",
@@ -1123,7 +1181,7 @@ export default {
             stack: "人数",
             barWidth: 20,
             yAxisIndex: 1,
-            data: [0, data.UnusualEmployeeNumber]
+            data: [0, 0, data.todayDangerousPersonCount]
           }
         ]
       };
@@ -1788,7 +1846,7 @@ export default {
     margin-top: 25px;
   }
   .mid-data-item {
-    width: 140px;
+    width: 120px;
     text-align: center;
   }
   .mid-data-c1 {

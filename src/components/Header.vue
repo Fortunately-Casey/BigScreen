@@ -1,6 +1,6 @@
 <template>
   <div class="header">
-    南通开发区健康在线后台管理系统
+    南通开发区教育健康在线后台管理系统
     <div class="user">
       <div class="name">{{userName}}</div>
       <div class="logo"></div>
@@ -71,6 +71,7 @@ export default {
       right: 20px;
       top: 50%;
       transform: translateY(-50%);
+      cursor: pointer;
     }
     .logout {
       width: 100px;

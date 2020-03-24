@@ -23,6 +23,7 @@ export function debounce(fn, delay) {
     }
 }
 
+// 日期转换
 export function Todate(chinadatetime) { //Fri Oct 31 18:00:00 UTC+0800 2008 
     if (chinadatetime) {
         var d = new Date(chinadatetime);

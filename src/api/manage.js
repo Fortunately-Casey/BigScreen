@@ -1,5 +1,7 @@
 import axios from "axios";
-import { getURL } from "@/common/tool";
+import {
+  getURL
+} from "@/common/tool";
 
 // 登录
 export function login(params) {
@@ -19,7 +21,7 @@ export function getPermissionEnterprises(params) {
   const url = getURL("/manage/sys/getPermissionEnterprises");
   return axios
     .get(url, {
-      params:params
+      params: params
     })
     .then(resp => {
       return Promise.resolve(resp);
@@ -74,6 +76,19 @@ export function exportEnterpriseBaseList(params) {
   const url = getURL("/manage/sys/exportEnterpriseBaseList");
   return axios
     .post(url, params)
+    .then(resp => {
+      return Promise.resolve(resp);
+    })
+    .catch(err => {
+      console.log(err);
+    });
+}
+
+// 获取大屏数据
+export function getMonitorData(params) {
+  const url = getURL("/monitor/getMonitorData");
+  return axios
+    .get(url, params)
     .then(resp => {
       return Promise.resolve(resp);
     })

@@ -1,5 +1,6 @@
 <template>
   <div class="login">
+    <Spin fix size="large" v-show="isShowLoading"></Spin>
     <div class="left">
       <div class="circle-top"></div>
       <div class="circle-left"></div>
@@ -29,7 +30,8 @@ export default {
   data() {
     return {
       userID: "",
-      password: ""
+      password: "",
+      isShowLoading:false
     };
   },
   created() {
@@ -43,10 +45,12 @@ export default {
   methods: {
     login() {
       let vm = this;
+      vm.isShowLoading = true;
       login({
         userID: vm.userID,
         password: vm.password
       }).then(resp => {
+        vm.isShowLoading = false;
         if(resp.data.success) {
           vm.$Message.success("登录成功!");
           window.localStorage.setItem("userID",vm.userID);
@@ -76,7 +80,7 @@ export default {
     flex: 1;
     position: relative;
     .title {
-      width: 444px;
+      width: 484px;
       height: 50px;
       margin: 0 auto;
       margin-top: 350px;
@@ -90,7 +94,7 @@ export default {
         margin: 0 10px;
       }
       .text {
-        width: 382px;
+        width: 422px;
         height: 23px;
         background: url("../../assets/images/title-text.png") no-repeat;
         background-size: 100% 100%;

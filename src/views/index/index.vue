@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+    <Spin fix size="large" v-show="isShowLoading"></Spin>
     <Header :userName="userName"></Header>
     <div class="main">
       <div class="filter">
@@ -212,7 +213,7 @@
               <span>{{info.cough?'是':'否'}}</span>
             </div>
             <div class="info-row">
-              <label>3月2日至今是否离开过南通：</label>
+              <label>3月10日至今是否离开过南通：</label>
               <span>{{info.leaveNT?'是':'否'}}</span>
             </div>
             <div class="info-row">
@@ -259,6 +260,7 @@ export default {
   name: "index",
   data() {
     return {
+      isShowLoading:false,
       isSuperAdmin: false,
       userName: "",
       formInline: {
@@ -284,12 +286,12 @@ export default {
       ruleInline: {},
       h_school: false,
       columns: [
-        {
-          title: "序号",
-          key: "id",
-          align: "center",
-          width: 80
-        },
+        // {
+        //   title: "序号",
+        //   key: "id",
+        //   align: "center",
+        //   width: 80
+        // },
         {
           title: "姓名",
           key: "name",
@@ -380,9 +382,11 @@ export default {
   methods: {
     getPermissionEnterprises() {
       let vm = this;
+      vm.isShowLoading = true;
       getPermissionEnterprises({
         enterpriseID: vm.$route.query.enterpriseID
       }).then(resp => {
+        vm.isShowLoading = false;
         if (vm.$route.query.level === "Root") {
           vm.isSuperAdmin = true;
           vm.userName = "KFQSHSYJ";
@@ -400,7 +404,7 @@ export default {
           vm.formInline.enterpriseID = vm.classList[0].enterpriseID;
           vm.getList();
         } else {
-          vm.userName = resp.data.data.basePermissionList[0].adminUserID;
+          vm.userName = window.localStorage.getItem("userID");
           vm.isSuperAdmin = false;
           vm.classList = resp.data.data.basePermissionList;
           vm.formInline.school =
@@ -482,6 +486,7 @@ export default {
     exportData() {
       var vm = this;
       let params;
+      vm.isShowLoading = true;
       if (vm.$route.query.level === "Root") {
         params = {
           periodPlaceDate: Todate(vm.formInline.date), //打卡日期
@@ -495,6 +500,7 @@ export default {
         };
       }
       exportEnterprisePeriodPlaceList(params).then(resp => {
+        vm.isShowLoading = false;
         if (resp.data.success) {
           window.location.href = `https://yqfk.ntkfqjy.com:20000${resp.data.data}`;
         }
@@ -503,6 +509,7 @@ export default {
     //导出异常信息
     exportInformation() {
       var vm = this;
+      vm.isShowLoading = true;
       let params;
       if (vm.$route.query.level === "Root") {
         params = {
@@ -517,6 +524,7 @@ export default {
         };
       }
       exportEnterprisePeriodPlaceList(params).then(resp => {
+        vm.isShowLoading = false;
         if (resp.data.success) {
           window.location.href = `https://yqfk.ntkfqjy.com:20000${resp.data.data}`;
         }
@@ -524,11 +532,13 @@ export default {
     },
     exportSummary() {
       let vm = this;
+      vm.isShowLoading = true;
       if (vm.$route.query.level === "Root") {
         exportEnterpriseGroupList({
           enterpriseID: vm.$route.query.enterpriseID,
           periodPlaceDate: Todate(vm.formInline.date)
         }).then(resp => {
+          vm.isShowLoading = false;
           if (resp.data.success) {
             window.location.href = `https://yqfk.ntkfqjy.com:20000${resp.data.data}`;
           }
@@ -538,6 +548,7 @@ export default {
           enterpriseID: vm.$route.query.enterpriseID,
           periodPlaceDate: Todate(vm.formInline.date)
         }).then(resp => {
+          vm.isShowLoading = false;
           if (resp.data.success) {
             window.location.href = `https://yqfk.ntkfqjy.com:20000${resp.data.data}`;
           }

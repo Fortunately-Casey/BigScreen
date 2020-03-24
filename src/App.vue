@@ -56,4 +56,7 @@ body {
     color: #16d0a0 !important;
   }
 }
+.ivu-form-item {
+  margin-top: 10px;
+}
 </style>
