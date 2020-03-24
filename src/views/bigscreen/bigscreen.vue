@@ -1019,7 +1019,6 @@ export default {
                 type: "bar",
                 stack: "人数",
                 barWidth: 20,
-                yAxisIndex: 1,
                 data: [
                   0,
                   0,
@@ -1173,7 +1172,6 @@ export default {
             type: "bar",
             stack: "人数",
             barWidth: 20,
-            yAxisIndex: 1,
             data: [
               0,
               0,
