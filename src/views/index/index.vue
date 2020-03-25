@@ -41,6 +41,7 @@
               size="large"
               placeholder="班级"
               style="width:150px;"
+              :disabled ="isDisabledClass"
               @on-change="classChange"
             >
               <Option
@@ -151,17 +152,14 @@
       </div>
       <div class="controls">
         <div class="data-handle">
-          <a href="javascript:void(0);" class="export" @click="exportData">导出数据</a>
+          <a href="javascript:void(0);" class="export" @click="exportData">导出筛选</a>
           <a href="javascript:void(0);" class="export" @click="exportInformation">导出异常</a>
           <a href="javascript:void(0);" class="export" @click="exportSummary">导出汇总</a>
+          <a href="javascript:void(0);" class="export" @click="exportNew">导出最新</a>
         </div>
       </div>
       <div class="list">
-        <Table
-          :columns="columns"
-          :data="list"
-          :loading="loading"
-        ></Table>
+        <Table :columns="columns" :data="list" :loading="loading"></Table>
         <div class="page">
           <Page :total="total" :page-size="pageSize" :current="pageIndex" @on-change="changePage" />
         </div>
@@ -217,8 +215,8 @@
               <span>{{info.leaveNT?'是':'否'}}</span>
             </div>
             <div class="info-row">
-              <label>返通前地址：</label>
-              <span>{{info.beforeReturnNtProvince + info.beforeReturnNtCity + info.beforeReturnNtCounty + info.beforeReturnNtAddress }}</span>
+              <label>在外地址：</label>
+              <span>{{(info.beforeReturnNtProvince + info.beforeReturnNtCity + info.beforeReturnNtCounty + info.beforeReturnNtAddress)|| info.overseasAddress }}</span>
             </div>
             <div class="info-row">
               <label>返通日期：</label>
@@ -254,13 +252,15 @@ import {
   getEnterprisePeriodPlaceList,
   exportEnterprisePeriodPlaceList,
   exportEnterpriseGroupList,
-  exportEnterpriseBaseList
+  exportEnterpriseBaseList,
+  exportEnterprisePeriodPlaceListlast
 } from "@/api/manage.js";
 export default {
   name: "index",
   data() {
     return {
-      isShowLoading:false,
+      isDisabledClass:false,
+      isShowLoading: false,
       isSuperAdmin: false,
       userName: "",
       formInline: {
@@ -367,7 +367,7 @@ export default {
       pageIndex: 1,
       total: 0,
       modal: false,
-      info: {},
+      info: {}
     };
   },
   components: {
@@ -403,7 +403,20 @@ export default {
           vm.formInline.class = vm.classList[0].enterpriseName;
           vm.formInline.enterpriseID = vm.classList[0].enterpriseID;
           vm.getList();
+        } else if (vm.$route.query.level === "Group") {
+          vm.userName = window.localStorage.getItem("userID");
+          vm.isSuperAdmin = false;
+          vm.classList = resp.data.data.basePermissionList;
+          vm.formInline.school =
+            resp.data.data.groupPermissionList[0].enterpriseName;
+          vm.formInline.parentEnterpriseID =
+            resp.data.data.groupPermissionList[0].enterpriseID;
+          vm.formInline.class =
+            resp.data.data.basePermissionList[0].enterpriseName;
+          vm.formInline.enterpriseID = vm.classList[0].enterpriseID;
+          vm.getList();
         } else {
+          vm.isDisabledClass = true;
           vm.userName = window.localStorage.getItem("userID");
           vm.isSuperAdmin = false;
           vm.classList = resp.data.data.basePermissionList;
@@ -487,18 +500,19 @@ export default {
       var vm = this;
       let params;
       vm.isShowLoading = true;
-      if (vm.$route.query.level === "Root") {
-        params = {
-          periodPlaceDate: Todate(vm.formInline.date), //打卡日期
-          status: "3" //状态，3:全部，4:未审核，5已审核，6:异常，0:未打卡，1:已打卡
-        };
-      } else {
-        params = {
-          parentEnterpriseID: vm.$route.query.enterpriseID,
-          periodPlaceDate: Todate(vm.formInline.date), //打卡日期
-          status: "3" //状态，3:全部，4:未审核，5已审核，6:异常，0:未打卡，1:已打卡
-        };
-      }
+      params = {
+        enterpriseID: vm.formInline.enterpriseID, //班级编号
+        parentEnterpriseID: vm.formInline.parentEnterpriseID, //学校编号
+        periodPlaceDate: Todate(vm.formInline.date), //打卡日期
+        status: vm.formInline.punchStatus, //状态，3:全部，4:未审核，5已审核，6:异常，0:未打卡，1:已打卡
+        name: vm.formInline.name, //姓名
+        mobile: vm.formInline.tel, //手机号
+        // idCard: vm.formInline.id, //身份证号码
+        inNT: vm.formInline.isInNanTong,
+        tempFlag: vm.formInline.heat, //体温范围，1:大于等于37.3,0:小于37.3
+        cough: vm.formInline.discomfort, //是否不适，true,false
+        currStatus: vm.formInline.status //当前状态，正常、隔离中、发热门诊留观、定点医院就诊、其他
+      };
       exportEnterprisePeriodPlaceList(params).then(resp => {
         vm.isShowLoading = false;
         if (resp.data.success) {
@@ -554,6 +568,19 @@ export default {
           }
         });
       }
+    },
+    exportNew() {
+      let vm = this;
+      vm.isShowLoading = true;
+      exportEnterprisePeriodPlaceListlast({
+        enterpriseID: vm.$route.query.enterpriseID,
+        status: "1"
+      }).then((resp) => {
+          vm.isShowLoading = false;
+          if (resp.data.success) {
+            window.location.href = `https://yqfk.ntkfqjy.com:20000${resp.data.data}`;
+          }
+      })
     },
     resetFunc() {
       this.$refs["formInline"].resetFields();

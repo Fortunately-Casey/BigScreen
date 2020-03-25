@@ -88,11 +88,26 @@ export function exportEnterpriseBaseList(params) {
 export function getMonitorData(params) {
   const url = getURL("/monitor/getMonitorData");
   return axios
-    .get(url, params)
+    .get(url, {
+      params: params
+    })
     .then(resp => {
       return Promise.resolve(resp);
     })
     .catch(err => {
       console.log(err);
     });
+}
+
+// 导出最新数据
+export function exportEnterprisePeriodPlaceListlast(params) {
+  const url = getURL("/manage/sys/exportEnterprisePeriodPlaceListlast");
+  return axios
+    .post(url, params)
+    .then((resp) => {
+      return Promise.resolve(resp);
+    })
+    .catch((err) => {
+      console.log(err);
+    })
 }

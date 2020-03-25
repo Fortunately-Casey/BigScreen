@@ -82,7 +82,7 @@
             <div class="mid-data-item">
               <div
                 class="mid-data-c1"
-              >较昨日 {{(todayCount.noReturnTeacherCount- yesterdayCount.noReturnTeacherCount) || 0}}</div>
+              >较昨日 +{{(todayCount.noReturnTeacherCount- yesterdayCount.noReturnTeacherCount) || 0}}</div>
               <div class="mid-data-c2">{{todayCount.noReturnTeacherCount || 0}}</div>
               <div class="mid-data-c3">未返通教师</div>
             </div>
@@ -132,12 +132,12 @@
             <p>街道人员信息</p>
           </div>
           <div class="col-chart" id="col-chart3"></div>
-        </div> -->
+        </div>-->
         <div class="sub-mid">
           <div class="sub-title col-bg mb15">
             <p>街道人员信息</p>
           </div>
-          <div class="col-chart" id="col-chart4" ></div>
+          <div class="col-chart" id="col-chart4"></div>
         </div>
         <div class="sub-mid">
           <div class="sub-title list-bg mb15">
@@ -724,6 +724,7 @@ export default {
         vm.createPieChart(vm.statistcsLast);
         vm.createColumnChart1(res);
         vm.createColumnChart2(res);
+        vm.createColumnChart4(res);
       });
     },
     init: function() {
@@ -948,7 +949,7 @@ export default {
           data: ["申报班级", "今日申报", "异常班级"],
           axisLabel: {
             color: "#fff",
-            rotate: 20
+            rotate: 30
           },
           axisLine: {
             show: false
@@ -1106,7 +1107,7 @@ export default {
           axisLabel: {
             color: "#fff",
             interval: 0,
-            rotate: 20
+            rotate: 30
           },
           axisLine: {
             show: false
@@ -1146,8 +1147,8 @@ export default {
             axisLine: {
               show: false
             },
-            max: maxError, // 计算最大值
-            interval: Math.ceil(maxError / 5),
+            max: 300, // 计算最大值
+            interval: Math.ceil(300 / 5),
             axisTick: {
               show: false
             }
@@ -1320,87 +1321,76 @@ export default {
           myChart.setOption(option);
         });
     },
-    createColumnChart4: function() {
-      axios
-        .get(getURL("CommandHandler.ashx"), {
-          params: {
-            method: "GetIsolateStatistic"
+    createColumnChart4: function(res) {
+      let data = [];
+      res.streetDataList.map(v => {
+        data.push(v.count);
+      });
+      var myChart = echarts.init(document.getElementById("col-chart4"));
+      var option = {
+        tooltip: {
+          trigger: "axis"
+        },
+        grid: {
+          top: "30",
+          left: "3%",
+          right: "50",
+          bottom: "3%",
+          containLabel: true
+        },
+        color: ["#46C1DA"],
+        xAxis: {
+          type: "category",
+          name: "街道",
+          data: [
+            "江海街道",
+            "老洪港管理委员会",
+            "小海街道",
+            "新开街道",
+            "中兴街道",
+            "竹行街道"
+          ],
+          nameTextStyle: {
+            color: "#fff"
+          },
+          axisLabel: {
+            color: "#fff",
+            rotate:30
+          },
+          axisLine: {
+            show: false
+          },
+          axisTick: {
+            show: false
           }
-        })
-        .then(function(res) {
-          var myChart = echarts.init(document.getElementById("col-chart4"));
-          var option = {
-            tooltip: {
-              trigger: "axis"
-            },
-            grid: {
-              top: "30",
-              left: "3%",
-              right: "50",
-              bottom: "3%",
-              containLabel: true
-            },
-            color: ["#46C1DA"],
-            xAxis: {
-              type: "category",
-              name: "天数",
-              data: [
-                "1",
-                "2",
-                "3",
-                "4",
-                "5",
-                "6",
-                "7",
-                "8",
-                "9",
-                "10",
-                "11",
-                "12",
-                "13",
-                "14"
-              ],
-              nameTextStyle: {
-                color: "#fff"
-              },
-              axisLabel: {
-                color: "#fff"
-              },
-              axisLine: {
-                show: false
-              },
-              axisTick: {
-                show: false
-              }
-            },
-            yAxis: {
-              type: "value",
-              name: "人数",
-              nameTextStyle: {
-                color: "#fff"
-              },
-              axisLabel: {
-                color: "#fff"
-              },
-              axisLine: {
-                show: false
-              },
-              axisTick: {
-                show: false
-              }
-            },
-            series: [
-              {
-                name: "人数",
-                barWidth: 20,
-                type: "bar",
-                data: res.data.split(",")
-              }
-            ]
-          };
-          // 使用刚指定的配置项和数据显示图表。
-          myChart.setOption(option);
-        });
+        },
+        yAxis: {
+          type: "value",
+          name: "人数",
+          nameTextStyle: {
+            color: "#fff"
+          },
+          axisLabel: {
+            color: "#fff"
+          },
+          axisLine: {
+            show: false
+          },
+          axisTick: {
+            show: false
+          }
+        },
+        series: [
+          {
+            name: "人数",
+            barWidth: 20,
+            type: "bar",
+            data: data
+          }
+        ]
+      };
+      // 使用刚指定的配置项和数据显示图表。
+      myChart.setOption(option);
     },
     showWarning() {
       let vm = this;
