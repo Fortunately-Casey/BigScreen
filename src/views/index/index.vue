@@ -13,6 +13,7 @@
               @on-change="choseSchool"
               style="width:250px;"
             >
+              <Option value="全部">全部</Option>
               <Option
                 v-for="(item,index) in schoolList"
                 :key="index"
@@ -41,9 +42,10 @@
               size="large"
               placeholder="班级"
               style="width:150px;"
-              :disabled ="isDisabledClass"
+              :disabled="isDisabledClass"
               @on-change="classChange"
             >
+              <Option value="全部">全部</Option>
               <Option
                 v-for="(item,index) in classList"
                 :key="index"
@@ -259,13 +261,13 @@ export default {
   name: "index",
   data() {
     return {
-      isDisabledClass:false,
+      isDisabledClass: false,
       isShowLoading: false,
       isSuperAdmin: false,
       userName: "",
       formInline: {
-        school: "",
-        class: "",
+        school: "全部",
+        class: "全部",
         name: "",
         id: "",
         tel: "",
@@ -391,17 +393,17 @@ export default {
           vm.isSuperAdmin = true;
           vm.userName = "KFQSHSYJ";
           vm.schoolList = resp.data.data.groupPermissionList;
-          vm.formInline.school =
-            resp.data.data.groupPermissionList[0].enterpriseName;
-          let parentEnterpriseID =
-            resp.data.data.groupPermissionList[0].enterpriseID;
-          vm.formInline.parentEnterpriseID = parentEnterpriseID;
+          // vm.formInline.school = "全部"
+          // resp.data.data.groupPermissionList[0].enterpriseName;
+          // let parentEnterpriseID =
+          //   resp.data.data.groupPermissionList[0].enterpriseID;
+          // vm.formInline.parentEnterpriseID = parentEnterpriseID;
           vm.allClass = resp.data.data.basePermissionList;
-          vm.classList = vm.allClass.filter(item => {
-            return item.parentEnterpriseID == parentEnterpriseID;
-          });
-          vm.formInline.class = vm.classList[0].enterpriseName;
-          vm.formInline.enterpriseID = vm.classList[0].enterpriseID;
+          // vm.classList = vm.allClass.filter(item => {
+          //   return item.parentEnterpriseID == parentEnterpriseID;
+          // });
+          // vm.formInline.class = vm.classList[0].enterpriseName;
+          // vm.formInline.enterpriseID = vm.classList[0].enterpriseID;
           vm.getList();
         } else if (vm.$route.query.level === "Group") {
           vm.userName = window.localStorage.getItem("userID");
@@ -432,6 +434,13 @@ export default {
       });
     },
     choseSchool(item) {
+      if (item === "全部") {
+        this.formInline.parentEnterpriseID = "";
+        this.formInline.enterpriseID = "";
+        this.formInline.school = "全部";
+        this.formInline.class = "全部";
+        return;
+      }
       let chosedSchool = this.schoolList.filter(v => v.enterpriseName === item);
       this.formInline.parentEnterpriseID = chosedSchool[0].enterpriseID;
       this.classList = this.allClass.filter(item => {
@@ -441,6 +450,11 @@ export default {
       this.formInline.enterpriseID = this.classList[0].enterpriseID;
     },
     classChange(item) {
+      if (item === "全部") {
+        this.formInline.class = "全部";
+        this.formInline.enterpriseID = "";
+        return;
+      }
       let chosedClass = this.classList.filter(v => v.enterpriseName === item);
       this.formInline.enterpriseID = chosedClass[0].enterpriseID;
     },
@@ -575,12 +589,12 @@ export default {
       exportEnterprisePeriodPlaceListlast({
         enterpriseID: vm.$route.query.enterpriseID,
         status: "1"
-      }).then((resp) => {
-          vm.isShowLoading = false;
-          if (resp.data.success) {
-            window.location.href = `https://yqfk.ntkfqjy.com:20000${resp.data.data}`;
-          }
-      })
+      }).then(resp => {
+        vm.isShowLoading = false;
+        if (resp.data.success) {
+          window.location.href = `https://yqfk.ntkfqjy.com:20000${resp.data.data}`;
+        }
+      });
     },
     resetFunc() {
       this.$refs["formInline"].resetFields();

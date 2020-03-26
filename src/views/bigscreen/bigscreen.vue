@@ -24,9 +24,9 @@
         <div class="gk">
           <h4>疫情监测</h4>
           <div class="btn">
-            <a href="javascript:void(0);" class="btn6">病例人数（{{statistcsLast.PatientNumber}}）</a>
+            <a href="javascript:void(0);" class="btn6">病例人数（{{extCase.caseNumber}}）</a>
             <a href="javascript:void(0);" class="btn8">定点医院（{{statistcsLast.designatedCount}}）</a>
-            <a href="javascript:void(0);" class="btn7">密接人数（{{statistcsLast.CloseContactNumber}}）</a>
+            <a href="javascript:void(0);" class="btn7">密接人数（{{extCase.contactNumber}}）</a>
             <a href="javascript:void(0);" class="btn5">发热门诊（{{statistcsLast.feverCount}}）</a>
           </div>
         </div>
@@ -60,7 +60,7 @@
             <div class="mid-data-item">
               <div
                 class="mid-data-c1"
-              >较昨日 +{{(todayCount.teacherCount - yesterdayCount.teacherCount) || 0}}</div>
+              >较昨日{{(todayCount.teacherCount - yesterdayCount.teacherCount) >= 0?"+":""}}{{(todayCount.teacherCount - yesterdayCount.teacherCount) || 0}}</div>
               <div class="mid-data-c2">{{todayCount.teacherCount || 0}}</div>
               <div class="mid-data-c3">
                 填报教师
@@ -71,7 +71,7 @@
             <div class="mid-data-item">
               <div
                 class="mid-data-c1"
-              >较昨日 +{{(todayCount.studentCount - yesterdayCount.studentCount) || 0}}</div>
+              >较昨日{{(todayCount.studentCount - yesterdayCount.studentCount) >=0?"+":""}}{{(todayCount.studentCount - yesterdayCount.studentCount) || 0}}</div>
               <div class="mid-data-c2">{{todayCount.studentCount || 0}}</div>
               <div class="mid-data-c3">
                 填报学生
@@ -82,21 +82,21 @@
             <div class="mid-data-item">
               <div
                 class="mid-data-c1"
-              >较昨日 +{{(todayCount.noReturnTeacherCount- yesterdayCount.noReturnTeacherCount) || 0}}</div>
+              >较昨日{{(todayCount.noReturnTeacherCount- yesterdayCount.noReturnTeacherCount) >= 0? "+" :""}}{{(todayCount.noReturnTeacherCount- yesterdayCount.noReturnTeacherCount) || 0}}</div>
               <div class="mid-data-c2">{{todayCount.noReturnTeacherCount || 0}}</div>
               <div class="mid-data-c3">未返通教师</div>
             </div>
             <div class="mid-data-item">
               <div
                 class="mid-data-c1"
-              >较昨日 +{{(todayCount.noReturnStudentCount - yesterdayCount.noReturnStudentCount ) || 0}}</div>
+              >较昨日{{(todayCount.noReturnStudentCount - yesterdayCount.noReturnStudentCount )>=0?"+":""}}{{(todayCount.noReturnStudentCount - yesterdayCount.noReturnStudentCount ) || 0}}</div>
               <div class="mid-data-c2">{{todayCount.noReturnStudentCount || 0}}</div>
               <div class="mid-data-c3">未反通学生</div>
             </div>
             <div class="mid-data-item">
               <div
                 class="mid-data-c1"
-              >较昨日 +{{(todayCount.dangerousTeacherCount - yesterdayCount.dangerousTeacherCount) || 0}}</div>
+              >较昨日{{(todayCount.dangerousTeacherCount - yesterdayCount.dangerousTeacherCount) >= 0?"+":""}}{{(todayCount.dangerousTeacherCount - yesterdayCount.dangerousTeacherCount) || 0}}</div>
               <div
                 class="mid-data-c2"
                 @click="showWarning"
@@ -106,7 +106,7 @@
             <div class="mid-data-item">
               <div
                 class="mid-data-c1"
-              >较昨日 +{{(todayCount.dangerousStudentCount - yesterdayCount.dangerousStudentCount) || 0}}</div>
+              >较昨日{{(todayCount.dangerousStudentCount - yesterdayCount.dangerousStudentCount) >=0?"+":""}}{{(todayCount.dangerousStudentCount - yesterdayCount.dangerousStudentCount) || 0}}</div>
               <div
                 class="mid-data-c2"
                 @click="showWarning"
@@ -419,7 +419,8 @@ export default {
       yesterdayCount: {},
       todayCount: {},
       classCount: 0,
-      personCount: 0
+      personCount: 0,
+      extCase: {}
     };
   },
   created() {},
@@ -713,13 +714,13 @@ export default {
       vm.isShowLoading = true;
       getMonitorData().then(resp => {
         vm.isShowLoading = false;
-        console.log(resp.data.data);
         let res = resp.data.data;
         vm.statistcsLast = res.statistcsLast;
         vm.yesterdayCount = res.yesterdayCount;
         vm.todayCount = res.todayCount;
         vm.classCount = res.yesterdayClassCount + res.todayAddClassCount;
         vm.personCount = res.yesterdayPersonCount + res.todayAddPersonCount;
+        vm.extCase = res.extCase;
         vm.createLineChart(res.staffDynamicsList);
         vm.createPieChart(vm.statistcsLast);
         vm.createColumnChart1(res);
@@ -1355,7 +1356,7 @@ export default {
           },
           axisLabel: {
             color: "#fff",
-            rotate:30
+            rotate: 30
           },
           axisLine: {
             show: false
