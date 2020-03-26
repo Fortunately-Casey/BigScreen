@@ -200,7 +200,7 @@
             </div>
             <div class="info-row">
               <label>现居住地：</label>
-              <span>{{ info.currCounty + info.currStreet + info.currAddress }}</span>
+              <span>{{ info.currCounty + info.currStreet + info.currCommunity + info.currAddress }}</span>
             </div>
           </div>
           <div class="info-item">
