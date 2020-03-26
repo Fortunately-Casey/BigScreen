@@ -558,6 +558,7 @@ export default {
         }
       });
     },
+    // 导出汇总
     exportSummary() {
       let vm = this;
       vm.isShowLoading = true;
@@ -583,6 +584,7 @@ export default {
         });
       }
     },
+    // 导出最新
     exportNew() {
       let vm = this;
       vm.isShowLoading = true;
