@@ -122,7 +122,7 @@
       <div class="right-part">
         <h3>人员防疫概况</h3>
         <div class="sub-mid">
-          <div class="sub-title col-bg mb15">
+          <div class="sub-title line-bg mb15">
             <p>学校人员动态</p>
           </div>
           <div class="col-chart" id="line-chart"></div>
@@ -141,11 +141,11 @@
         </div>
         <div class="sub-mid">
           <div class="sub-title list-bg mb15">
-            <p>症状监测</p>
+            <p>健康异常信息</p>
           </div>
           <div class="list-row list-row-head">
             <div class="list-item-one">序号</div>
-            <div class="list-item">企业名称</div>
+            <div class="list-item">学校名称</div>
             <div class="list-item-three">发热</div>
             <div class="list-item-four">不适症状</div>
             <div class="list-item-three">留观</div>
@@ -157,16 +157,16 @@
             </div>
             <div
               class="list-row"
-              v-for="(item,index) in cwxx"
+              v-for="(item,index) in dangerousCountList"
               :key="index"
-              @click="showDetail(item.EnterpriseID)"
+              @click="showDetail(item)"
             >
               <div class="list-item-one">{{index + 1}}</div>
-              <div class="list-item" :title="item.EnterpriseName">{{item.EnterpriseName}}</div>
-              <div class="list-item-three">{{item.TempCount}}</div>
-              <div class="list-item-four">{{item.CoughCount}}</div>
-              <div class="list-item-three">{{item.ObserveCount}}</div>
-              <div class="list-item-three">{{item.SeekCount}}</div>
+              <div class="list-item" :title="item.enterpriseName">{{item.enterpriseName}}</div>
+              <div class="list-item-three">{{item.tempCount}}</div>
+              <div class="list-item-four">{{item.coughCount}}</div>
+              <div class="list-item-three">{{item.designatedCount}}</div>
+              <div class="list-item-three">{{item.feverCount}}</div>
             </div>
           </div>
           <!-- <div class="list-row">
@@ -193,10 +193,10 @@
       </div>
     </div>
     <div class="copyright">
-      <span style="margin-right:40px;">数据来源：南通市疾病预防控制中心开发区分中心</span>
+      <span style="margin-right:40px;">数据来源：南通开发区社会事业局</span>
       <span>技术支持：南通市测绘院有限公司</span>
     </div>
-    <Modal v-model="modal" width="1200" :footer-hide="true" class="dark-blue-modal">
+    <Modal v-model="modal" width="1600" :footer-hide="true" class="dark-blue-modal">
       <div slot="header">
         <p class="m-title"></p>
       </div>
@@ -273,6 +273,7 @@ import icon3 from "../../assets/images/bigscreen/icon3.png";
 import red from "../../assets/images/bigscreen/red.png";
 import green from "../../assets/images/bigscreen/green.png";
 import blue from "../../assets/images/bigscreen/blue.png";
+import StreetIcon from "../../assets/images/bigscreen/streetWarning.png";
 
 let echarts = require("echarts");
 
@@ -286,7 +287,7 @@ export default {
     return {
       isShowLoading: false,
       map: null,
-      frmzlyr: null,
+      ycjd: null,
       jzgldlyr: null,
       qzrylyr: null,
       ycqylyr: null,
@@ -305,25 +306,35 @@ export default {
           width: 70
         },
         {
+          title: "学校",
+          key: "parentEnterpriseName",
+          align: "center"
+        },
+        {
+          title: "班级",
+          key: "enterpriseName",
+          align: "center"
+        },
+        {
           title: "姓名",
-          key: "Name",
+          key: "name",
           align: "center",
           width: 80
         },
         {
           title: "体温",
-          key: "Temp",
+          key: "temp",
           align: "center",
-          width: 60
+          width: 80
         },
         {
-          title: "是否咳嗽",
-          key: "Cough",
+          title: "是否不适",
+          key: "cough",
           align: "center",
           width: 100,
           render: (h, params) => {
             var s = "";
-            if (!params.row.Cough) {
+            if (!params.row.cough) {
               s = "否";
             } else {
               s = "是";
@@ -333,64 +344,58 @@ export default {
         },
         {
           title: "不适症状",
-          key: "SymptomsDetail",
-          align: "center"
-        },
-        {
-          title: "管理员电话号码",
-          key: "ManageMobile",
+          key: "symptomsDetail",
           align: "center"
         },
         {
           title: "当前状态",
-          key: "CurrStatus",
+          key: "currStatus",
           align: "center"
         },
         {
-          title: "是否复工",
-          key: "RecoveryWork",
-          align: "center",
-          width: 70,
-          render: (h, params) => {
-            var s = "";
-            if (!params.row.RecoveryWork) {
-              s = "否";
-            } else {
-              s = "是";
-            }
-            return h("div", [h("span", {}, s)]);
-          }
-        },
-        {
-          title: "身份证号",
-          key: "IdCard",
+          title: "现居住地",
+          key: "currAddress",
           align: "center"
         },
         {
           title: "联系电话",
-          key: "Mobile",
+          key: "mobile",
           align: "center"
         },
         {
-          title: "是否返通",
-          key: "LeaveNT",
+          title: "是否离通",
+          key: "leaveNT",
           align: "center",
-          width: 70,
+          width: 90,
           render: (h, params) => {
             var s = "";
-            if (!params.row.LeaveNT) {
+            if (!params.row.leaveNT) {
               s = "否";
             } else {
               s = "是";
             }
             return h("div", [h("span", {}, s)]);
           }
+        },
+        {
+          title: "返通日期",
+          key: "returnNTDate",
+          align: "center",
+          width: 150
         },
         {
           title: "返通前地址",
           key: "BeforeReturnNtAddress",
           align: "center",
-          width: 150
+          width: 150,
+          render: (h, params) => {
+            var s =
+              params.row.beforeReturnNtProvince +
+              params.row.beforeReturnNtCity +
+              params.row.beforeReturnNtCounty +
+              params.row.beforeReturnNtAddress;
+            return h("div", [h("span", {}, s || params.row.overseasAddress)]);
+          }
         }
       ],
       warning: false,
@@ -420,12 +425,13 @@ export default {
       todayCount: {},
       classCount: 0,
       personCount: 0,
-      extCase: {}
+      extCase: {},
+      dangerousCountList: []
     };
   },
   created() {},
   mounted: function() {
-    this.getMonitorData();
+    // this.getMonitorData();
     var d = new Date();
     var year = d.getFullYear();
     var month = d.getMonth() + 1;
@@ -444,271 +450,155 @@ export default {
       vm.time = Hour + ":" + Min + ":" + sec;
     }, 1000);
     this.isLogin = getToken();
-    // this.$nextTick(function() {
-    //   vm.init();
-    // });
-    // setInterval(() => {
-    //   this.$nextTick(function() {
-    //     vm.init();
-    //   });
-    // }, 1000 * 60 * 10);
-    // const options = {
-    //   // tell Dojo where to load other packages
-    //   dojoConfig: {
-    //     async: true,
-    //     packages: [
-    //       {
-    //         name: "custom",
-    //         location: "/custom"
-    //       }
-    //     ]
-    //   },
-    //   url: "http://223.113.1.77:8010/arcgis_js_api/library/3.19/3.19/init.js"
-    // };
-    // loadModules(
-    //   [
-    //     "esri/map",
-    //     "esri/layers/ArcGISTiledMapServiceLayer",
-    //     "esri/layers/ArcGISDynamicMapServiceLayer",
-    //     "esri/layers/FeatureLayer",
-    //     "esri/geometry/Extent",
-    //     "esri/renderers/HeatmapRenderer",
-    //     "esri/config",
-    //     "esri/symbols/PictureMarkerSymbol",
-    //     "esri/symbols/SimpleMarkerSymbol",
-    //     "esri/symbols/TextSymbol",
-    //     "esri/renderers/ClassBreaksRenderer",
-    //     "esri/symbols/SimpleFillSymbol",
-    //     "esri/symbols/SimpleLineSymbol",
-    //     "custom/ClusterLayer"
-    //   ],
-    //   options
-    // )
-    //   .then(
-    //     ([
-    //       Map,
-    //       ArcGISTiledMapServiceLayer,
-    //       ArcGISDynamicMapServiceLayer,
-    //       FeatureLayer,
-    //       Extent,
-    //       HeatmapRenderer,
-    //       esriConfig,
-    //       PictureMarkerSymbol,
-    //       SimpleMarkerSymbol,
-    //       TextSymbol,
-    //       ClassBreaksRenderer,
-    //       SimpleFillSymbol,
-    //       SimpleLineSymbol,
-    //       ClusterLayer
-    //     ]) => {
-    //       var initialExtent = new Extent(
-    //         120.893798,
-    //         31.793207,
-    //         121.084289,
-    //         31.987909,
-    //         new esri.SpatialReference({ wkid: 4490 })
-    //       );
-    //       vm.map = new Map("map", {
-    //         extent: initialExtent,
-    //         logo: false,
-    //         slider: false
-    //       });
-    //       var dynamicLayer = new ArcGISDynamicMapServiceLayer(
-    //         "http://223.113.1.77:6080/arcgis/rest/services/NTJKZX/NTKFQMapService/MapServer"
-    //       );
-    //       vm.map.addLayer(dynamicLayer);
-
-    //       var frmzSymbol = new PictureMarkerSymbol(icon5, 12, 22);
-    //       var jzgldSymbol = new PictureMarkerSymbol(icon3, 24, 16);
-    //       var qzrySymbol = new PictureMarkerSymbol(icon6, 20, 22);
-    //       var ycqySymbol = new PictureMarkerSymbol(icon11, 23, 20);
-
-    //       //发热门诊
-    //       if (vm.frmzlyr == null) {
-    //         var layerDefinition = {
-    //           geometryType: "esriGeometryPoint",
-    //           fields: [
-    //             {
-    //               name: "Name",
-    //               type: "esriFieldTypeString",
-    //               alias: "名称"
-    //             },
-    //             {
-    //               name: "Address",
-    //               type: "esriFieldTypeString",
-    //               alias: "地址"
-    //             }
-    //           ]
-    //         };
-    //         var featureCollection = {
-    //           layerDefinition: layerDefinition,
-    //           featureSet: null
-    //         };
-    //         var infoTemplate = new esri.InfoTemplate();
-    //         infoTemplate.setTitle("${Name}");
-    //         infoTemplate.setContent("${Address}<br/>");
-    //         //创建发热门诊图层
-    //         vm.frmzlyr = new FeatureLayer(featureCollection, {
-    //           infoTemplate: infoTemplate,
-    //           outFields: ["*"],
-    //           opacity: 1
-    //         });
-    //         vm.map.addLayer(vm.frmzlyr);
-
-    //         axios
-    //           .get(getURL("CommandHandler.ashx"), {
-    //             params: {
-    //               method: "GetOpenZoneFeverClinics"
-    //             }
-    //           })
-    //           .then(function(res) {
-    //             for (var i = 0; i < res.data.length; i++) {
-    //               var info = {};
-    //               var x = Number(res.data[i].XZB);
-    //               var y = Number(res.data[i].YZB);
-    //               var point = new esri.geometry.Point(
-    //                 x,
-    //                 y,
-    //                 new esri.SpatialReference({ wkid: 4490 })
-    //               ); //初始化起点
-    //               var graphic = new esri.Graphic(point);
-    //               graphic.setAttributes({
-    //                 Name: res.data[i].Name,
-    //                 Address: res.data[i].Address
-    //               });
-    //               graphic.setSymbol(frmzSymbol);
-    //               vm.frmzlyr.add(graphic);
-    //             }
-    //           });
-    //       }
-
-    //       //集中隔离点
-    //       if (vm.jzgldlyr == null) {
-    //         var layerDefinition = {
-    //           geometryType: "esriGeometryPoint",
-    //           fields: [
-    //             {
-    //               name: "Name",
-    //               type: "esriFieldTypeString",
-    //               alias: "名称"
-    //             },
-    //             {
-    //               name: "Address",
-    //               type: "esriFieldTypeString",
-    //               alias: "地址"
-    //             }
-    //           ]
-    //         };
-    //         var featureCollection = {
-    //           layerDefinition: layerDefinition,
-    //           featureSet: null
-    //         };
-    //         var infoTemplate = new esri.InfoTemplate();
-    //         infoTemplate.setTitle("${Name}");
-    //         infoTemplate.setContent("${Address}<br/>");
-    //         //创建集中隔离点图层
-    //         vm.jzgldlyr = new FeatureLayer(featureCollection, {
-    //           mode: FeatureLayer.MODE_SNAPSHOT,
-    //           infoTemplate: infoTemplate,
-    //           outFields: ["*"],
-    //           opacity: 1
-    //         });
-    //         vm.map.addLayer(vm.jzgldlyr);
-
-    //         axios
-    //           .get(getURL("CommandHandler.ashx"), {
-    //             params: {
-    //               method: "GetOpenZoneIsolationPoint"
-    //             }
-    //           })
-    //           .then(function(res) {
-    //             for (var i = 0; i < res.data.length; i++) {
-    //               var info = {};
-    //               var x = Number(res.data[i].XZB);
-    //               var y = Number(res.data[i].YZB);
-    //               var point = new esri.geometry.Point(
-    //                 x,
-    //                 y,
-    //                 new esri.SpatialReference({ wkid: 4490 })
-    //               ); //初始化起点
-    //               var graphic = new esri.Graphic(point);
-    //               graphic.setAttributes({
-    //                 Name: res.data[i].Name,
-    //                 Address: res.data[i].Address
-    //               });
-    //               graphic.setSymbol(jzgldSymbol);
-    //               vm.jzgldlyr.add(graphic);
-    //             }
-    //           });
-    //       }
-
-    //       //异常企业
-    //       if (vm.ycqylyr == null) {
-    //         var layerDefinition = {
-    //           geometryType: "esriGeometryPoint",
-    //           fields: [
-    //             {
-    //               name: "EnterpriseName",
-    //               type: "esriFieldTypeString",
-    //               alias: "名称"
-    //             },
-    //             {
-    //               name: "Address",
-    //               type: "esriFieldTypeString",
-    //               alias: "地址"
-    //             }
-    //           ]
-    //         };
-    //         var featureCollection = {
-    //           layerDefinition: layerDefinition,
-    //           featureSet: null
-    //         };
-    //         var infoTemplate = new esri.InfoTemplate();
-    //         infoTemplate.setTitle("${EnterpriseName}");
-    //         infoTemplate.setContent("${Address}<br/>");
-    //         //创建集中隔离点图层
-    //         vm.ycqylyr = new FeatureLayer(featureCollection, {
-    //           mode: FeatureLayer.MODE_SNAPSHOT,
-    //           infoTemplate: infoTemplate,
-    //           outFields: ["*"],
-    //           opacity: 1
-    //         });
-    //         vm.map.addLayer(vm.ycqylyr);
-
-    //         axios
-    //           .get(getURL("CommandHandler.ashx"), {
-    //             params: {
-    //               method: "GetUnusualEnterprise"
-    //             }
-    //           })
-    //           .then(function(res) {
-    //             for (var i = 0; i < res.data.length; i++) {
-    //               var info = {};
-    //               var x = Number(res.data[i].BDX);
-    //               var y = Number(res.data[i].BDY);
-    //               var point = new esri.geometry.Point(
-    //                 x,
-    //                 y,
-    //                 new esri.SpatialReference({ wkid: 4490 })
-    //               ); //初始化起点
-    //               var graphic = new esri.Graphic(point);
-    //               graphic.setAttributes({
-    //                 EnterpriseName: res.data[i].EnterpriseName,
-    //                 Address: res.data[i].Address
-    //               });
-    //               graphic.setSymbol(ycqySymbol);
-    //               vm.ycqylyr.add(graphic);
-    //             }
-    //           });
-    //       }
-    //     }
-    //   )
-    //   .catch(err => {
-    //     // handle any errors
-    //     console.error(err);
-    //   });
+    this.$nextTick(function() {
+      vm.getMonitorData();
+    });
+    setInterval(() => {
+      this.$nextTick(function() {
+        vm.getMonitorData();
+      });
+    }, 1000 * 60 * 10);
   },
   methods: {
+    initMap(res) {
+      let vm = this;
+      const options = {
+        // tell Dojo where to load other packages
+        dojoConfig: {
+          async: true,
+          packages: [
+            {
+              name: "custom",
+              location: "/custom"
+            }
+          ]
+        },
+        url: "http://223.113.1.77:8010/arcgis_js_api/library/3.19/3.19/init.js"
+      };
+      loadModules(
+        [
+          "esri/map",
+          "esri/layers/ArcGISTiledMapServiceLayer",
+          "esri/layers/ArcGISDynamicMapServiceLayer",
+          "esri/layers/FeatureLayer",
+          "esri/geometry/Extent",
+          "esri/renderers/HeatmapRenderer",
+          "esri/config",
+          "esri/symbols/PictureMarkerSymbol",
+          "esri/symbols/SimpleMarkerSymbol",
+          "esri/symbols/TextSymbol",
+          "esri/renderers/ClassBreaksRenderer",
+          "esri/symbols/SimpleFillSymbol",
+          "esri/symbols/SimpleLineSymbol",
+          "custom/ClusterLayer",
+          "esri/Color"
+        ],
+        options
+      )
+        .then(
+          ([
+            Map,
+            ArcGISTiledMapServiceLayer,
+            ArcGISDynamicMapServiceLayer,
+            FeatureLayer,
+            Extent,
+            HeatmapRenderer,
+            esriConfig,
+            PictureMarkerSymbol,
+            SimpleMarkerSymbol,
+            TextSymbol,
+            ClassBreaksRenderer,
+            SimpleFillSymbol,
+            SimpleLineSymbol,
+            ClusterLayer,
+            Color
+          ]) => {
+            var initialExtent = new Extent(
+              120.893798,
+              31.793207,
+              121.084289,
+              31.987909,
+              new esri.SpatialReference({ wkid: 4490 })
+            );
+            vm.map = new Map("map", {
+              extent: initialExtent,
+              logo: false,
+              slider: false
+            });
+            var dynamicLayer = new ArcGISDynamicMapServiceLayer(
+              "http://223.113.1.77:6080/arcgis/rest/services/NTJKZX/NTKFQMapService/MapServer"
+            );
+            vm.map.addLayer(dynamicLayer);
+
+            var frmzSymbol = new PictureMarkerSymbol(icon5, 12, 22);
+            var jzgldSymbol = new PictureMarkerSymbol(icon3, 24, 16);
+            var qzrySymbol = new PictureMarkerSymbol(icon6, 20, 22);
+            var ycqySymbol = new PictureMarkerSymbol(icon11, 23, 20);
+            var StreetSymbol = new PictureMarkerSymbol(StreetIcon, 30, 30);
+
+            //发热门诊
+            if (vm.ycjd == null) {
+              var layerDefinition = {
+                geometryType: "esriGeometryPoint",
+                fields: [
+                  {
+                    name: "Name",
+                    type: "esriFieldTypeString",
+                    alias: "名称"
+                  },
+                  {
+                    name: "Address",
+                    type: "esriFieldTypeString",
+                    alias: "地址"
+                  }
+                ]
+              };
+              var featureCollection = {
+                layerDefinition: layerDefinition,
+                featureSet: null
+              };
+              // var infoTemplate = new esri.InfoTemplate();
+              // infoTemplate.setTitle("${Name}");
+              // infoTemplate.setContent("${Address}<br/>");
+              //创建异常街道信息图层
+              vm.ycjd = new FeatureLayer(featureCollection, {
+                // infoTemplate: infoTemplate,
+                outFields: ["*"],
+                opacity: 1
+              });
+              vm.map.addLayer(vm.ycjd);
+              
+              for (var i = 0; i < res.dangerousGeoList.length; i++) {
+                var info = {};
+                var x = Number(res.dangerousGeoList[i].lon);
+                var y = Number(res.dangerousGeoList[i].lat);
+                var textSym = new TextSymbol(res.dangerousGeoList[i].count);
+                // var textSym = new TextSymbol(20,"我是文字" , Color.RED);
+                textSym.setColor(new Color([255, 255, 255, 1]));
+                textSym.yoffset=-5;  
+                var point = new esri.geometry.Point(
+                  x,
+                  y,
+                  new esri.SpatialReference({ wkid: 4490 })
+                ); //初始化起点
+                var graphic = new esri.Graphic(point);
+                var number = new esri.Graphic(point, textSym);
+                graphic.setAttributes({
+                  Name: res.dangerousGeoList[i].Name,
+                  Address: res.dangerousGeoList[i].Address
+                });
+                graphic.setSymbol(StreetSymbol);
+                vm.ycjd.add(graphic);
+                vm.ycjd.add(number);
+              }
+            }
+          }
+        )
+        .catch(err => {
+          // handle any errors
+          console.error(err);
+        });
+    },
     getMonitorData() {
       let vm = this;
       vm.isShowLoading = true;
@@ -721,11 +611,13 @@ export default {
         vm.classCount = res.yesterdayClassCount + res.todayAddClassCount;
         vm.personCount = res.yesterdayPersonCount + res.todayAddPersonCount;
         vm.extCase = res.extCase;
+        vm.dangerousCountList = res.dangerousCountList;
         vm.createLineChart(res.staffDynamicsList);
         vm.createPieChart(vm.statistcsLast);
         vm.createColumnChart1(res);
         vm.createColumnChart2(res);
         vm.createColumnChart4(res);
+        vm.initMap(res);
       });
     },
     init: function() {
@@ -1454,19 +1346,10 @@ export default {
           });
         });
     },
-    showDetail(id) {
+    showDetail(item) {
       let vm = this;
-      axios
-        .get(getURL("CommandHandler.ashx"), {
-          params: {
-            method: "GetEnterpriseHighTempDetail",
-            enterpriseID: id
-          }
-        })
-        .then(function(res) {
-          vm.list = res.data || [];
-          vm.modal = true;
-        });
+      vm.list = item.details;
+      vm.modal = true;
     },
     handleSubmit() {
       if (this.form.userName != "super_admin") {
@@ -1742,12 +1625,16 @@ export default {
   .col-bg {
     background: url(../../assets/images/bigscreen/column.png) 0 center no-repeat;
   }
+  .line-bg {
+    background: url(../../assets/images/bigscreen/lineChart.png) 0 center
+      no-repeat;
+  }
   .pie-chart,
   .col-chart {
     flex: 1;
   }
   .list-panel {
-    max-height: 130px;
+    max-height: 200px;
     overflow: auto;
     .loading {
       width: 30px;

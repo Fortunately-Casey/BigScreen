@@ -32,7 +32,7 @@
                 id="school"
                 disabled
                 style="width:250px;"
-              ></Input>
+              />
               <span class="sp-school" :class="{'highlight-on':h_school}">学校名字</span>
             </div>
           </FormItem>
@@ -60,7 +60,7 @@
               size="large"
               placeholder="姓名"
               style="width:130px;"
-            ></Input>
+            />
           </FormItem>
           <!-- <FormItem prop="id">
             <Input type="text" v-model="formInline.id" size="large" placeholder="身份证号"></Input>
@@ -72,7 +72,7 @@
               size="large"
               placeholder="联系电话"
               style="width:130px;"
-            ></Input>
+            />
           </FormItem>
           <FormItem prop="heat">
             <Select v-model="formInline.heat" size="large" placeholder="体温段查询" style="width:120px;">
@@ -166,7 +166,7 @@
           <Page :total="total" :page-size="pageSize" :current="pageIndex" @on-change="changePage" />
         </div>
       </div>
-      <div class="copyright">2020&copy南通市测绘院有限公司</div>
+      <div class="copyright">2020{{"&"}}copy南通市测绘院有限公司</div>
       <Modal v-model="modal" width="840">
         <div slot="header" :style="'display:flex;'">
           <div class="detail-logo"></div>
