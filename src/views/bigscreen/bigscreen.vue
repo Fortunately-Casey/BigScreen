@@ -165,8 +165,8 @@
               <div class="list-item" :title="item.enterpriseName">{{item.enterpriseName}}</div>
               <div class="list-item-three">{{item.tempCount}}</div>
               <div class="list-item-four">{{item.coughCount}}</div>
-              <div class="list-item-three">{{item.designatedCount}}</div>
               <div class="list-item-three">{{item.feverCount}}</div>
+              <div class="list-item-three">{{item.designatedCount}}</div>
             </div>
           </div>
           <!-- <div class="list-row">

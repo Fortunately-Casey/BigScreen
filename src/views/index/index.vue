@@ -247,7 +247,6 @@
 <script>
 import Header from "../../components/Header.vue";
 import $ from "jquery";
-import axios from "axios";
 import { getURL, debounce, Todate } from "../../common/tool.js";
 import {
   getPermissionEnterprises,
@@ -379,6 +378,8 @@ export default {
     let vm = this;
     // 获取学校跟班级
     vm.getPermissionEnterprises();
+    document.getElementsByTagName("title")[0].innerText =
+      "南通开发区教育健康在线后台管理系统";
   },
   mounted() {},
   methods: {
