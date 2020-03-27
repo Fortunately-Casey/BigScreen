@@ -212,54 +212,9 @@
         <Table :columns="columns" :data="warningList" :height="500"></Table>
       </div>
     </Modal>
-    <!-- <div class="login">
-      <template v-if="!isLogin">
-        <a href="javascript:void(0);" class="login-btn" @click="loginFormShow=true">请登录</a>
-      </template>
-      <template v-else>
-        <div class="logined">
-          <a href="javascript:void(0);" class="logined-btn" @click="isOpenSys = !isOpenSys">管理员</a>
-          <ul class="sys-link" v-show="isOpenSys">
-            <li>
-              <a href="javascript:void(0);" class="backend" @click="navigate('index')">后台管理</a>
-            </li>
-            <li>
-              <a href="javascript:void(0);" class="backend" @click="navigate('manage')">企业管理</a>
-            </li>
-            <li>
-              <a href="javascript:void(0);" class="logout" @click="logoutFunc">退出</a>
-            </li>
-          </ul>
-        </div>
-      </template>
-      <div class="login-form" v-if="loginFormShow">
-        <div class="login-wrap">
-          <a href="javascript:void(0);" class="form-close" @click="loginFormShow=false"></a>
-          <Form
-            ref="loginForm"
-            :model="form"
-            class="login-content"
-            label-position="top"
-            @keydown.enter.native="handleSubmit"
-          >
-            <h3>企业复工辅助决策系统</h3>
-            <FormItem label="用户名">
-              <Input v-model="form.userName" placeholder="请输入用户名"></Input>
-            </FormItem>
-            <FormItem label="密码">
-              <Input type="password" v-model="form.password" placeholder="请输入密码"></Input>
-            </FormItem>
-            <FormItem>
-              <Button @click="handleSubmit" type="primary" long>登录</Button>
-            </FormItem>
-          </Form>
-        </div>
-      </div>
-    </div>-->
   </div>
 </template>
 <script>
-import $ from "jquery";
 import axios from "axios";
 import { getURL } from "../../common/tool.js";
 import { getMonitorData } from "@/api/manage.js";
