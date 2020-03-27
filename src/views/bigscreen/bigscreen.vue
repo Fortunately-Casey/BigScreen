@@ -886,7 +886,7 @@ export default {
           var myChart = echarts.init(document.getElementById("col-chart1"));
           var option = {
             legend: {
-              data: ["昨日累计", "今日新增", "异常数量", "今日申报"],
+              data: ["昨日累计", "今日新增", "今日申报", "异常数量"],
               textStyle: {
                 color: "#fff"
               },
@@ -913,9 +913,9 @@ export default {
                     "：" +
                     params[1].value
                   );
-                } else if (params[0].name == "异常企业") {
+                } else if (params[0].name == "今日申报") {
                   return (
-                    "异常企业" +
+                    "今日企业申报数" +
                     "<br/>" +
                     params[2].marker +
                     params[2].seriesName +
@@ -924,7 +924,7 @@ export default {
                   );
                 } else {
                   return (
-                    "今日企业申报数" +
+                    "异常企业" +
                     "<br/>" +
                     params[3].marker +
                     params[3].seriesName +
@@ -941,10 +941,10 @@ export default {
               bottom: "-2%",
               containLabel: true
             },
-            color: ["#4D7FD8", "#4EBA90", "#D88C15", "#3AE3AC"],
+            color: ["#4D7FD8", "#4EBA90", "#3AE3AC", "#D88C15"],
             xAxis: {
               type: "category",
-              data: ["申报企业", "异常企业", "今日申报"],
+              data: ["申报企业", "今日申报", "异常企业"],
               axisLabel: {
                 color: "#fff",
                 interval: 0,
@@ -1007,23 +1007,23 @@ export default {
                 data: [data.TodayAddEnterpriseNumber, 0, 0]
               },
               {
-                name: "异常数量",
-                type: "bar",
-                stack: "人数",
-                barWidth: 20,
-                yAxisIndex: 1,
-                data: [0, data.UnusualEnterpriseNumber, 0]
-              },
-              {
                 name: "今日申报",
                 type: "bar",
                 stack: "人数",
                 barWidth: 20,
                 data: [
                   0,
-                  0,
-                  data.TodayEnterpriseNumber ? data.TodayEnterpriseNumber : 0
+                  data.TodayEnterpriseNumber ? data.TodayEnterpriseNumber : 0,
+                  0
                 ]
+              },
+              {
+                name: "异常数量",
+                type: "bar",
+                stack: "人数",
+                barWidth: 20,
+                yAxisIndex: 1,
+                data: [0, 0, data.UnusualEnterpriseNumber]
               }
             ]
           };
@@ -1037,7 +1037,7 @@ export default {
       var myChart = echarts.init(document.getElementById("col-chart2"));
       var option = {
         legend: {
-          data: ["昨日累计", "今日新增", "异常数量", "今日申报"],
+          data: ["昨日累计", "今日新增", "今日申报", "异常数量"],
           textStyle: {
             color: "#fff"
           },
@@ -1062,9 +1062,9 @@ export default {
                 "：" +
                 params[1].value
               );
-            } else if (params[0].name == "异常人员") {
+            } else if (params[0].name == "今日申报") {
               return (
-                "异常人员" +
+                "今日申报员工数" +
                 "<br/>" +
                 params[2].marker +
                 params[2].seriesName +
@@ -1073,7 +1073,7 @@ export default {
               );
             } else {
               return (
-                "今日申报员工数" +
+                "异常人员" +
                 "<br/>" +
                 params[3].marker +
                 params[3].seriesName +
@@ -1090,10 +1090,10 @@ export default {
           bottom: "-2%",
           containLabel: true
         },
-        color: ["#4D7FD8", "#4EBA90", "#D88C15", "#3AE3AC"],
+        color: ["#4D7FD8", "#4EBA90", "#3AE3AC", "#D88C15"],
         xAxis: {
           type: "category",
-          data: ["申报人员", "异常人员", "今日申报"],
+          data: ["申报人员", "今日申报", "异常人员"],
           axisLabel: {
             color: "#fff",
             interval: 0,
@@ -1160,23 +1160,23 @@ export default {
             data: [data.TodayAddEmployeeNumber, 0, 0]
           },
           {
-            name: "异常数量",
-            type: "bar",
-            stack: "人数",
-            barWidth: 20,
-            yAxisIndex: 1,
-            data: [0, data.UnusualEmployeeNumber, 0]
-          },
-          {
             name: "今日申报",
             type: "bar",
             stack: "人数",
             barWidth: 20,
             data: [
               0,
-              0,
-              data.TodayEmployeeNumber ? data.TodayEmployeeNumber : 0
+              data.TodayEmployeeNumber ? data.TodayEmployeeNumber : 0,
+              0
             ]
+          },
+          {
+            name: "异常数量",
+            type: "bar",
+            stack: "人数",
+            barWidth: 20,
+            yAxisIndex: 1,
+            data: [0, 0, data.UnusualEmployeeNumber]
           }
         ]
       };
