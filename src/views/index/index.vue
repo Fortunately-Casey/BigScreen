@@ -148,7 +148,6 @@
           </FormItem>
           <FormItem>
             <Button type="primary" size="large" class="btn-search" @click="searchFunc">查询</Button>
-            <!-- <Button type="warning" size="large" class="btn-reset" @click="resetFunc">重置</Button> -->
           </FormItem>
         </Form>
       </div>
@@ -158,6 +157,7 @@
           <a href="javascript:void(0);" class="export" @click="exportInformation">导出异常</a>
           <a href="javascript:void(0);" class="export" @click="exportSummary">导出汇总</a>
           <a href="javascript:void(0);" class="export" @click="exportNew">导出最新</a>
+          <a href="javascript:void(0);" class="export" @click="exportMiss" v-if="isShowExportMiss">导出缺课</a>
         </div>
       </div>
       <div class="list">
@@ -254,12 +254,14 @@ import {
   exportEnterprisePeriodPlaceList,
   exportEnterpriseGroupList,
   exportEnterpriseBaseList,
-  exportEnterprisePeriodPlaceListlast
+  exportEnterprisePeriodPlaceListlast,
+  exportAbsentTotal
 } from "@/api/manage.js";
 export default {
   name: "index",
   data() {
     return {
+      isShowExportMiss: false,
       isDisabledClass: false,
       isShowLoading: false,
       isSuperAdmin: false,
@@ -380,6 +382,11 @@ export default {
     vm.getPermissionEnterprises();
     document.getElementsByTagName("title")[0].innerText =
       "南通开发区教育健康在线后台管理系统";
+    if (vm.$route.query.level === "Root") {
+      vm.isShowExportMiss = true;
+    } else {
+      vm.isShowExportMiss = false;
+    }
   },
   mounted() {},
   methods: {
@@ -394,17 +401,7 @@ export default {
           vm.isSuperAdmin = true;
           vm.userName = "KFQSHSYJ";
           vm.schoolList = resp.data.data.groupPermissionList;
-          // vm.formInline.school = "全部"
-          // resp.data.data.groupPermissionList[0].enterpriseName;
-          // let parentEnterpriseID =
-          //   resp.data.data.groupPermissionList[0].enterpriseID;
-          // vm.formInline.parentEnterpriseID = parentEnterpriseID;
           vm.allClass = resp.data.data.basePermissionList;
-          // vm.classList = vm.allClass.filter(item => {
-          //   return item.parentEnterpriseID == parentEnterpriseID;
-          // });
-          // vm.formInline.class = vm.classList[0].enterpriseName;
-          // vm.formInline.enterpriseID = vm.classList[0].enterpriseID;
           vm.getList();
         } else if (vm.$route.query.level === "Group") {
           vm.userName = window.localStorage.getItem("userID");
@@ -599,6 +596,19 @@ export default {
         }
       });
     },
+    exportMiss() {
+      let vm = this;
+      vm.isShowLoading = true;
+      exportAbsentTotal({
+        enterpriseID: vm.$route.query.enterpriseID,
+        absentDate:Todate(vm.formInline.date)
+      }).then((resp) => {
+        vm.isShowLoading = false;
+        if (resp.data.success) {
+          window.location.href = `https://yqfk.ntkfqjy.com:20000${resp.data.data}`;
+        }
+      })
+    },
     resetFunc() {
       this.$refs["formInline"].resetFields();
     }
@@ -607,7 +617,7 @@ export default {
 };
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
 .container {
   height: 100%;
   .main {

@@ -111,3 +111,18 @@ export function exportEnterprisePeriodPlaceListlast(params) {
       console.log(err);
     })
 }
+
+// 导出缺课记录
+export function exportAbsentTotal(params) {
+  const url = getURL("/absent/manager/exportAbsentTotal");
+  return axios
+    .get(url, {
+      params: params
+    })
+    .then((resp) => {
+      return Promise.resolve(resp);
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+}

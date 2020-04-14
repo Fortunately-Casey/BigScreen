@@ -22,6 +22,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
   height: 100%;
+  min-width: 1680px;
 }
 /*滚动条样式 */
 ::-webkit-scrollbar-track-piece {
