@@ -339,8 +339,8 @@ export default {
       //   return;
       // }
       vm.loading = true;
-      let username = window.localStorage.getItem("username");
-      let password = window.localStorage.getItem("password");
+      // let username = window.localStorage.getItem("username");
+      // let password = window.localStorage.getItem("password");
       axios
         .get(getURL("CommandHandler.ashx"), {
           params: {
@@ -356,8 +356,8 @@ export default {
             type: type,
             startdate: this.formInline.startDate,
             enddate: this.formInline.endDate,
-            loginname: username,
-            password: password
+            // loginname: username,
+            // password: password
           }
         })
         .then(function(res) {
