@@ -61,7 +61,12 @@
             </Select>
           </FormItem>
           <FormItem prop="personType">
-            <Select v-model="formInline.personType" size="large" placeholder="身份类型" style="width:150px;">
+            <Select
+              v-model="formInline.personType"
+              size="large"
+              placeholder="身份类型"
+              style="width:150px;"
+            >
               <Option value>全部</Option>
               <Option value="是">国外</Option>
               <Option value="否">国内</Option>
@@ -92,12 +97,7 @@
         </div>
       </div>
       <div class="filter">
-        <Form
-          :model="formImport"
-          :rules="ruleInline"
-          inline
-          :style="'text-align:right'"
-        >
+        <Form :model="formImport" :rules="ruleInline" inline :style="'text-align:right'">
           <FormItem prop="name">
             <Input
               type="text"
@@ -253,7 +253,7 @@ export default {
         heat: "",
         startDate: "",
         endDate: "",
-        personType:""
+        personType: ""
       },
       formImport: {
         casenumber: "",
@@ -399,6 +399,8 @@ export default {
           break;
       }
       this.loading = true;
+      let username = window.localStorage.getItem("username");
+      let password = window.localStorage.getItem("password");
       axios
         .get(getURL("CommandHandler.ashx"), {
           params: {
@@ -414,7 +416,9 @@ export default {
             type: type,
             startdate: this.formInline.startDate,
             enddate: this.formInline.endDate,
-            foreign: this.formInline.personType
+            foreign: this.formInline.personType,
+            loginname: username,
+            password: password
           }
         })
         .then(function(res) {
@@ -597,7 +601,7 @@ export default {
   .filter {
     padding: 10px 40px;
     border-bottom: 1px solid #e2e9f1;
-     position: relative;
+    position: relative;
     .ivu-form-item {
       margin-bottom: 0;
     }

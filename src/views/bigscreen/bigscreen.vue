@@ -1473,17 +1473,33 @@ export default {
         });
     },
     handleSubmit() {
-      if (this.form.userName != "super_admin") {
-        this.$Message.error("用户名不存在！");
+      let vm = this;
+      if (!this.form.userName) {
+        this.$Message.error("请输入用户名！");
         return;
       }
       if (!this.form.password) {
         this.$Message.error("请输入密码！");
         return;
       }
-      setToken("super_admin");
-      this.isLogin = true;
-      this.loginFormShow = false;
+      axios.get(getURL("CommandHandler.ashx"), {
+        params: {
+          method: "CheckUser",
+          loginname: this.form.userName,
+          password: this.form.password
+        }
+      }).then(function(res) {
+        if(res.data.result == 'success') {
+          vm.isLogin = true;
+          vm.loginFormShow = false;
+          window.localStorage.setItem('username',vm.form.userName);
+          window.localStorage.setItem('password',vm.form.password);
+          vm.$Message.success(res.data.message);
+        }else {
+          vm.$Message.error(res.data.message);
+        }
+      })
+      // setToken("super_admin");
     },
     logoutFunc() {
       setToken("");
