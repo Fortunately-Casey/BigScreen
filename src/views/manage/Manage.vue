@@ -5,7 +5,13 @@
       <div class="filter">
         <Form ref="formInline" :model="formInline" :rules="ruleInline" inline>
           <FormItem prop="name">
-            <Input type="text" v-model="formInline.name" size="large" placeholder="企业名称" @input="nameChange"></Input>
+            <Input
+              type="text"
+              v-model="formInline.name"
+              size="large"
+              placeholder="企业名称"
+              @input="nameChange"
+            ></Input>
           </FormItem>
           <FormItem prop="phone">
             <Input type="text" v-model="formInline.phone" size="large" placeholder="管理员手机"></Input>
@@ -16,7 +22,12 @@
           </FormItem>
         </Form>
         <div class="search-list" v-if="isShowNameList">
-          <div class="item" v-for="(v,i) in searchList" :key="i" @click="choseItem(v)">{{v.EnterpriseName}}</div>
+          <div
+            class="item"
+            v-for="(v,i) in searchList"
+            :key="i"
+            @click="choseItem(v)"
+          >{{v.EnterpriseName}}</div>
         </div>
       </div>
       <div class="list">
@@ -147,11 +158,11 @@ export default {
       pageIndex: 1,
       total: 0,
       modal: false,
-      chosedValue:{},
+      chosedValue: {},
       editValue: {},
-      searchList:[],
-      isShowNameList:false,
-      isWatchName:true
+      searchList: [],
+      isShowNameList: false,
+      isWatchName: true
     };
   },
   components: {
@@ -176,6 +187,8 @@ export default {
     getList() {
       let vm = this;
       vm.loading = true;
+      let username = window.localStorage.getItem("username");
+      let password = window.localStorage.getItem("password");
       axios
         .get(getURL("CommandHandler.ashx"), {
           params: {
@@ -183,7 +196,9 @@ export default {
             mobile: vm.formInline.phone,
             enterprisename: vm.formInline.name,
             pageIndex: vm.pageIndex,
-            pageSize: 10
+            pageSize: 10,
+            loginname: username,
+            password: password
           }
         })
         .then(function(res) {
@@ -199,18 +214,19 @@ export default {
     searchName() {
       let vm = this;
       axios
-        .get(getURL("CommandHandler.ashx"),{
+        .get(getURL("CommandHandler.ashx"), {
           params: {
             method: "GetEnterpriseName",
             enterprisename: vm.formInline.name
           }
-        }).then(function(res) {
-          if(res.data.length > 0) {
+        })
+        .then(function(res) {
+          if (res.data.length > 0) {
             vm.searchList = res.data;
             vm.isShowNameList = true;
           }
-          console.log(res)
-        })
+          console.log(res);
+        });
     },
     choseItem(v) {
       this.isWatchName = false;
@@ -288,14 +304,14 @@ export default {
             enterpriseid: vm.editValue.EnterpriseID,
             oldenterprisename: vm.chosedValue.EnterpriseName,
             newenterprisename: vm.editValue.EnterpriseName,
-            oldmobile:vm.chosedValue.Mobile,
-            newmobile:vm.editValue.Mobile,
+            oldmobile: vm.chosedValue.Mobile,
+            newmobile: vm.editValue.Mobile,
             employeecount: vm.editValue.EmployeeCount,
             isolatedbedcount: vm.editValue.IsolatedBedCount
           }
         })
         .then(function(res) {
-          console.log(res)
+          console.log(res);
           if (res.data.result === "success") {
             vm.$Message.success({
               content: "修改成功!"
@@ -314,9 +330,9 @@ export default {
       this.getList();
     }
   },
-  watch:{
+  watch: {
     "formInline.name"() {
-      if(this.formInline.name === "") {
+      if (this.formInline.name === "") {
         this.isWatchName = false;
         this.isShowNameList = false;
       }
