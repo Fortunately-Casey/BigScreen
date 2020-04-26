@@ -55,6 +55,7 @@ export default {
           vm.$Message.success("登录成功!");
           window.localStorage.setItem("userID",vm.userID);
           window.localStorage.setItem("password",vm.password);
+          window.localStorage.setItem('token',resp.data.data.token);
           vm.$router.push({
             path:"/index",
             query:{
