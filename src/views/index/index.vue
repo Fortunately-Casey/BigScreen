@@ -387,6 +387,12 @@ export default {
     } else {
       vm.isShowExportMiss = false;
     }
+    let token = window.localStorage.getItem('token');
+    if(!token) {
+      this.$router.push({
+        path:"/login"
+      })
+    }
   },
   mounted() {},
   methods: {
