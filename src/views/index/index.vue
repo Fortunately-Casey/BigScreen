@@ -360,6 +360,12 @@ export default {
         vm.searchName();
       }, 500)
     );
+    let username = window.localStorage.getItem("username");
+    if(!username) {
+      this.$router.push({
+        path:"/bigScreen"
+      })
+    }
   },
   mounted() {
     this.getList();
