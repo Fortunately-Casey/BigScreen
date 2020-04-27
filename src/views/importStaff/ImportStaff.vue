@@ -79,7 +79,7 @@
         </div>-->
         <div class="data-handle">
           <a
-            href="http://119.3.194.191:8089/模板.xls"
+            href="http://58.221.154.38:8099/模板.xls"
             download="模板.xls"
             class="export"
             @click="downloadTomplate"
@@ -290,7 +290,9 @@ export default {
       info: {},
       params: {
         enterpriseid: this.$route.query.id,
-        enterprisename: this.$route.query.name
+        enterprisename: this.$route.query.name,
+        loginname: this.$route.query.loginname,
+        password: this.$route.query.password
       }
     };
   },
@@ -355,7 +357,7 @@ export default {
             pageSize: this.pageSize,
             type: type,
             startdate: this.formInline.startDate,
-            enddate: this.formInline.endDate,
+            enddate: this.formInline.endDate
             // loginname: username,
             // password: password
           }
