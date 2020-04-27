@@ -17,15 +17,34 @@ export function login(params) {
 }
 
 // 获取权限
+// export function getPermissionEnterprises(params) {
+//   let token = window.localStorage.getItem('token');
+//   // const url = getURL("/manage/sys/getPermissionEnterprises");
+//   const url = "https://yqfk.ntkfqjy.com:20000/api/manage/sys/getPermissionEnterprises";
+//   return axios
+//     .post(url, params, {
+//       headers: {
+//         token: token
+//       }
+//     })
+//     .then(resp => {
+//       return Promise.resolve(resp);
+//     })
+//     .catch(err => {
+//       console.log(err);
+//     });
+// }
+
 export function getPermissionEnterprises(params) {
-  let token = window.localStorage.getItem('token');
+  // let token = window.localStorage.getItem('token');
   const url = getURL("/manage/sys/getPermissionEnterprises");
+  // const url = "https://yqfk.ntkfqjy.com:20000/api/manage/sys/getPermissionEnterprises?enterpriseID=77d98cc187744defb3cc2018796049a7";
   return axios
     .get(url, {
-      params: params,
-      headers:{
-        token:token
-      }
+      params:params,
+      // headers:{
+      //   token:token
+      // }
     })
     .then(resp => {
       return Promise.resolve(resp);
@@ -35,15 +54,15 @@ export function getPermissionEnterprises(params) {
     });
 }
 
-// 
+
 // 获取打卡记录
 export function getEnterprisePeriodPlaceList(params) {
   let token = window.localStorage.getItem('token');
   const url = getURL("/manage/sys/getEnterprisePeriodPlaceList");
   return axios
-    .post(url, params,{
-      headers:{
-        token:token
+    .post(url, params, {
+      headers: {
+        token: token
       }
     })
     .then(resp => {
@@ -59,9 +78,9 @@ export function exportEnterprisePeriodPlaceList(params) {
   let token = window.localStorage.getItem('token');
   const url = getURL("/manage/sys/exportEnterprisePeriodPlaceList");
   return axios
-    .post(url, params,{
-      headers:{
-        token:token
+    .post(url, params, {
+      headers: {
+        token: token
       }
     })
     .then(resp => {
@@ -77,9 +96,9 @@ export function exportEnterpriseGroupList(params) {
   let token = window.localStorage.getItem('token');
   const url = getURL("/manage/sys/exportEnterpriseGroupList");
   return axios
-    .post(url, params,{
-      headers:{
-        token:token
+    .post(url, params, {
+      headers: {
+        token: token
       }
     })
     .then(resp => {
@@ -95,9 +114,9 @@ export function exportEnterpriseBaseList(params) {
   let token = window.localStorage.getItem('token');
   const url = getURL("/manage/sys/exportEnterpriseBaseList");
   return axios
-    .post(url, params,{
-      headers:{
-        token:token
+    .post(url, params, {
+      headers: {
+        token: token
       }
     })
     .then(resp => {
@@ -128,9 +147,9 @@ export function exportEnterprisePeriodPlaceListlast(params) {
   let token = window.localStorage.getItem('token');
   const url = getURL("/manage/sys/exportEnterprisePeriodPlaceListlast");
   return axios
-    .post(url, params,{
-      headers:{
-        token:token
+    .post(url, params, {
+      headers: {
+        token: token
       }
     })
     .then((resp) => {
@@ -148,8 +167,8 @@ export function exportAbsentTotal(params) {
   return axios
     .get(url, {
       params: params,
-      headers:{
-        token:token
+      headers: {
+        token: token
       }
     })
     .then((resp) => {

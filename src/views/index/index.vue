@@ -157,7 +157,12 @@
           <a href="javascript:void(0);" class="export" @click="exportInformation">导出异常</a>
           <a href="javascript:void(0);" class="export" @click="exportSummary">导出汇总</a>
           <a href="javascript:void(0);" class="export" @click="exportNew">导出最新</a>
-          <a href="javascript:void(0);" class="export" @click="exportMiss" v-if="isShowExportMiss">导出缺课</a>
+          <a
+            href="javascript:void(0);"
+            class="export"
+            @click="exportMiss"
+            v-if="isShowExportMiss"
+          >导出缺课</a>
         </div>
       </div>
       <div class="list">
@@ -387,11 +392,11 @@ export default {
     } else {
       vm.isShowExportMiss = false;
     }
-    let token = window.localStorage.getItem('token');
-    if(!token) {
+    let userID = window.localStorage.getItem("userID");
+    if (!userID) {
       this.$router.push({
-        path:"/login"
-      })
+        path: "/login"
+      });
     }
   },
   mounted() {},
@@ -476,6 +481,8 @@ export default {
     },
     getList() {
       var vm = this;
+      let userID = window.localStorage.getItem("userID");
+      let password = window.localStorage.getItem("password");
       let params = {
         enterpriseID: vm.formInline.enterpriseID, //班级编号
         parentEnterpriseID: vm.formInline.parentEnterpriseID, //学校编号
@@ -489,7 +496,9 @@ export default {
         cough: vm.formInline.discomfort, //是否不适，true,false
         currStatus: vm.formInline.status, //当前状态，正常、隔离中、发热门诊留观、定点医院就诊、其他
         page: vm.pageIndex,
-        pageSize: vm.pageSize
+        pageSize: vm.pageSize,
+        userAdminID: userID,
+        password: password
       };
       this.loading = true;
       getEnterprisePeriodPlaceList(params).then(resp => {
@@ -518,6 +527,8 @@ export default {
       var vm = this;
       let params;
       vm.isShowLoading = true;
+      let userID = window.localStorage.getItem("userID");
+      let password = window.localStorage.getItem("password");
       params = {
         enterpriseID: vm.formInline.enterpriseID, //班级编号
         parentEnterpriseID: vm.formInline.parentEnterpriseID, //学校编号
@@ -529,7 +540,9 @@ export default {
         inNT: vm.formInline.isInNanTong,
         tempFlag: vm.formInline.heat, //体温范围，1:大于等于37.3,0:小于37.3
         cough: vm.formInline.discomfort, //是否不适，true,false
-        currStatus: vm.formInline.status //当前状态，正常、隔离中、发热门诊留观、定点医院就诊、其他
+        currStatus: vm.formInline.status, //当前状态，正常、隔离中、发热门诊留观、定点医院就诊、其他
+        userAdminID: userID,
+        password: password
       };
       exportEnterprisePeriodPlaceList(params).then(resp => {
         vm.isShowLoading = false;
@@ -542,17 +555,23 @@ export default {
     exportInformation() {
       var vm = this;
       vm.isShowLoading = true;
+      let userID = window.localStorage.getItem("userID");
+      let password = window.localStorage.getItem("password");
       let params;
       if (vm.$route.query.level === "Root") {
         params = {
           periodPlaceDate: Todate(vm.formInline.date), //打卡日期
-          status: "6" //状态，3:全部，4:未审核，5已审核，6:异常，0:未打卡，1:已打卡
+          status: "6", //状态，3:全部，4:未审核，5已审核，6:异常，0:未打卡，1:已打卡
+          userAdminID: userID,
+          password: password
         };
       } else {
         params = {
           parentEnterpriseID: vm.$route.query.enterpriseID,
           periodPlaceDate: Todate(vm.formInline.date), //打卡日期
-          status: "6" //状态，3:全部，4:未审核，5已审核，6:异常，0:未打卡，1:已打卡
+          status: "6", //状态，3:全部，4:未审核，5已审核，6:异常，0:未打卡，1:已打卡
+          userAdminID: userID,
+          password: password
         };
       }
       exportEnterprisePeriodPlaceList(params).then(resp => {
@@ -566,10 +585,14 @@ export default {
     exportSummary() {
       let vm = this;
       vm.isShowLoading = true;
+      let userID = window.localStorage.getItem("userID");
+      let password = window.localStorage.getItem("password");
       if (vm.$route.query.level === "Root") {
         exportEnterpriseGroupList({
           enterpriseID: vm.$route.query.enterpriseID,
-          periodPlaceDate: Todate(vm.formInline.date)
+          periodPlaceDate: Todate(vm.formInline.date),
+          userAdminID: userID,
+          password: password
         }).then(resp => {
           vm.isShowLoading = false;
           if (resp.data.success) {
@@ -579,7 +602,9 @@ export default {
       } else {
         exportEnterpriseBaseList({
           enterpriseID: vm.$route.query.enterpriseID,
-          periodPlaceDate: Todate(vm.formInline.date)
+          periodPlaceDate: Todate(vm.formInline.date),
+          userAdminID: userID,
+          password: password
         }).then(resp => {
           vm.isShowLoading = false;
           if (resp.data.success) {
@@ -591,10 +616,14 @@ export default {
     // 导出最新
     exportNew() {
       let vm = this;
+      let userID = window.localStorage.getItem("userID");
+      let password = window.localStorage.getItem("password");
       vm.isShowLoading = true;
       exportEnterprisePeriodPlaceListlast({
         enterpriseID: vm.$route.query.enterpriseID,
-        status: "1"
+        status: "1",
+        userAdminID: userID,
+        password: password
       }).then(resp => {
         vm.isShowLoading = false;
         if (resp.data.success) {
@@ -605,15 +634,19 @@ export default {
     exportMiss() {
       let vm = this;
       vm.isShowLoading = true;
+      let userID = window.localStorage.getItem("userID");
+      let password = window.localStorage.getItem("password");
       exportAbsentTotal({
         enterpriseID: vm.$route.query.enterpriseID,
-        absentDate:Todate(vm.formInline.date)
-      }).then((resp) => {
+        absentDate: Todate(vm.formInline.date),
+        userAdminID: userID,
+        password: password
+      }).then(resp => {
         vm.isShowLoading = false;
         if (resp.data.success) {
           window.location.href = `https://yqfk.ntkfqjy.com:20000${resp.data.data}`;
         }
-      })
+      });
     },
     resetFunc() {
       this.$refs["formInline"].resetFields();
