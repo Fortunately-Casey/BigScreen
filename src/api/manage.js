@@ -17,34 +17,15 @@ export function login(params) {
 }
 
 // 获取权限
-// export function getPermissionEnterprises(params) {
-//   let token = window.localStorage.getItem('token');
-//   // const url = getURL("/manage/sys/getPermissionEnterprises");
-//   const url = "https://yqfk.ntkfqjy.com:20000/api/manage/sys/getPermissionEnterprises";
-//   return axios
-//     .post(url, params, {
-//       headers: {
-//         token: token
-//       }
-//     })
-//     .then(resp => {
-//       return Promise.resolve(resp);
-//     })
-//     .catch(err => {
-//       console.log(err);
-//     });
-// }
-
 export function getPermissionEnterprises(params) {
-  // let token = window.localStorage.getItem('token');
+  let token = window.localStorage.getItem('token');
   const url = getURL("/manage/sys/getPermissionEnterprises");
-  // const url = "https://yqfk.ntkfqjy.com:20000/api/manage/sys/getPermissionEnterprises?enterpriseID=77d98cc187744defb3cc2018796049a7";
   return axios
     .get(url, {
       params:params,
-      // headers:{
-      //   token:token
-      // }
+      headers:{
+        token:token
+      }
     })
     .then(resp => {
       return Promise.resolve(resp);
