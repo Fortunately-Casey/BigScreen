@@ -116,7 +116,7 @@
           <div class="col-chart" id="col-chart4"></div>
         </div>
         <div class="right-foot">
-          <div class="sub-title list-bg mb15">
+          <!-- <div class="sub-title list-bg mb15">
             <p>症状监测</p>
           </div>
           <div class="list-row list-row-head">
@@ -144,7 +144,7 @@
               <div class="list-item-three">{{item.ObserveCount}}</div>
               <div class="list-item-three">{{item.SeekCount}}</div>
             </div>
-          </div>
+          </div> -->
           <!-- <div class="list-row">
                          <div class="list-item-one">1</div>
                          <div class="list-item">南通市祥和商务贸易有限公司</div>
@@ -684,7 +684,7 @@ export default {
       // this.createColumnChart3();
       // this.createColumnChart4();
       // this.createLineChart();
-      this.getCWInfo();
+      // this.getCWInfo();
     },
     createPieChart: function() {
       axios
