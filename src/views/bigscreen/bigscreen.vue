@@ -558,6 +558,12 @@ export default {
       let vm = this;
       vm.isShowLoading = true;
       getMonitorData().then(resp => {
+        if(!resp.data.success) {
+          vm.$router.push({
+            path:"/login"
+          })
+          return;
+        }
         vm.isShowLoading = false;
         let res = resp.data.data;
         vm.statistcsLast = res.statistcsLast;

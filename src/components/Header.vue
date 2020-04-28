@@ -1,6 +1,7 @@
 <template>
   <div class="header">
     南通开发区教育健康在线后台管理系统
+    <Button type="primary" style="float:right;margin:20px 250px 0 0" @click="goToBigScreen" v-if="isShowBigScreen">查看大屏</Button>
     <div class="user">
       <div class="name">{{userName}}</div>
       <div class="logo"></div>
@@ -16,14 +17,28 @@ export default {
   props:["userName"],
   data() {
     return {
-      isShowLogout: false
+      isShowLogout: false,
+      isShowBigScreen:false
     };
+  },
+  created() {
+    let level = this.$route.query.level;
+    if(level === 'Root') {
+      this.isShowBigScreen = true;
+    }else {
+      this.isShowBigScreen =false;
+    }
   },
   methods:{
       logout() {
           this.$router.push({
               path:"/login"
           })
+      },
+      goToBigScreen() {
+        this.$router.push({
+          path:'/bigScreen'
+        })
       }
   }
 };

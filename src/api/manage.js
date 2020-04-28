@@ -110,10 +110,14 @@ export function exportEnterpriseBaseList(params) {
 
 // 获取大屏数据
 export function getMonitorData(params) {
+  let token = window.localStorage.getItem('token');
   const url = getURL("/monitor/getMonitorData");
   return axios
     .get(url, {
       params: params,
+      headers:{
+        token:token
+      }
     })
     .then(resp => {
       return Promise.resolve(resp);
